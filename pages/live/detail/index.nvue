@@ -1,0 +1,657 @@
+<template>
+	<view class="page-container">
+		<!-- 直播视频区域 -->
+		<view class="video-container">
+			<!-- 本地视频预览 -->
+			<view v-if="isAnchor" class="local-video">
+				<!-- TRTC的本地视频预览组件 -->
+				<trtc-local-view v-if="trtcStore.localStream.videoEnabled" class="video-view" :viewId="localViewId"></trtc-local-view>
+				<view v-else class="placeholder-video">
+					<text class="placeholder-text">摄像头已关闭</text>
+				</view>
+			</view>
+
+			<!-- 远程视频 -->
+			<view v-else class="remote-video">
+				<!-- TRTC的远程视频预览组件 -->
+				<trtc-remote-view v-if="hasRemoteStream" class="video-view" :viewId="remoteViewId" :userId="liveStore.anchor.id"></trtc-remote-view>
+				<view v-else class="placeholder-video">
+					<text class="placeholder-text">等待主播开播...</text>
+				</view>
+			</view>
+
+			<!-- 直播信息 -->
+			<view class="live-info">
+				<view class="anchor-info">
+					<image class="anchor-avatar" :src="liveStore.anchor.avatar || '/static/images/default-avatar.png'" />
+					<text class="anchor-name">{{ liveStore.anchor.name }}</text>
+					<view class="viewer-count">
+						<text class="viewer-count-text">{{ liveStore.stats.viewerCount }}</text>
+					</view>
+				</view>
+				<text class="live-title">{{ liveStore.liveInfo.title }}</text>
+			</view>
+
+			<!-- 视频控制按钮 -->
+			<view v-if="isAnchor" class="video-controls">
+				<view class="control-button" @click="toggleVideo">
+					<text class="control-icon">{{ trtcStore.localStream.videoEnabled ? '📹' : '🚫' }}</text>
+					<text class="control-text">{{ trtcStore.localStream.videoEnabled ? '关闭摄像头' : '开启摄像头' }}</text>
+				</view>
+				<view class="control-button" @click="toggleAudio">
+					<text class="control-icon">{{ trtcStore.localStream.audioEnabled ? '🎤' : '🔇' }}</text>
+					<text class="control-text">{{ trtcStore.localStream.audioEnabled ? '关闭麦克风' : '开启麦克风' }}</text>
+				</view>
+				<view class="control-button" @click="switchCamera">
+					<text class="control-icon">🔄</text>
+					<text class="control-text">切换摄像头</text>
+				</view>
+			</view>
+		</view>
+
+		<!-- 互动区域 -->
+		<view class="interaction-container">
+			<!-- 消息列表 -->
+			<scroll-view class="message-list" scroll-y="true" :scroll-into-view="lastMessageId">
+				<view v-for="(message, index) in liveStore.messages" :key="message.id" :id="message.id" class="message-item">
+					<text class="message-sender">{{ message.userName }}:</text>
+					<text class="message-content">{{ message.content }}</text>
+				</view>
+			</scroll-view>
+
+			<!-- 输入区域 -->
+			<view class="input-area">
+				<input class="message-input" v-model="messageContent" placeholder="说点什么..." @confirm="sendMessage" />
+				<button class="send-button" @click="sendMessage">发送</button>
+			</view>
+
+			<!-- 操作按钮 -->
+			<view class="action-buttons">
+				<view class="action-button" @click="handleLike">
+					<text class="action-icon">👍</text>
+					<text class="action-text">{{ liveStore.stats.likeCount }}</text>
+				</view>
+				<view class="action-button" @click="handleShare">
+					<text class="action-icon">📤</text>
+					<text class="action-text">分享</text>
+				</view>
+				<view class="action-button" @click="handleGift">
+					<text class="action-icon">🎁</text>
+					<text class="action-text">礼物</text>
+				</view>
+				<view v-if="isAnchor" class="action-button end-live" @click="endLive">
+					<text class="action-text">结束直播</text>
+				</view>
+				<view v-else class="action-button leave-room" @click="leaveRoom">
+					<text class="action-text">离开</text>
+				</view>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script setup>
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useLiveStore } from '@/store/modules/live';
+import { useUserStore } from '@/store/modules/user';
+import { useTrtcStore } from '@/store/modules/trtc';
+
+// 使用store
+const liveStore = useLiveStore();
+const userStore = useUserStore();
+const trtcStore = useTrtcStore();
+
+// 页面参数
+const roomId = ref('');
+const messageContent = ref('');
+const lastMessageId = ref('');
+
+// 视频视图ID
+const localViewId = ref('local-video-view');
+const remoteViewId = ref('remote-video-view');
+
+// 计算属性
+const isAnchor = computed(() => {
+	return userStore.userId === liveStore.anchor.id;
+});
+
+const hasRemoteStream = computed(() => {
+	return trtcStore.remoteStreams.length > 0;
+});
+
+// 视频控制方法
+const toggleVideo = async () => {
+	const enabled = !trtcStore.localStream.videoEnabled;
+	await trtcStore.toggleLocalVideo(enabled);
+
+	if (enabled && !trtcStore.localStream.videoView) {
+		// 如果开启视频且没有视图，则启动本地预览
+		await trtcStore.startLocalPreview(localViewId.value);
+	}
+};
+
+const toggleAudio = async () => {
+	await trtcStore.toggleLocalAudio(!trtcStore.localStream.audioEnabled);
+};
+
+const switchCamera = async () => {
+	// 直接调用trtcStore的switchCamera方法
+	await trtcStore.switchCamera();
+
+	// 显示切换提示
+	uni.showToast({
+		title: trtcStore.currentDevices.isFrontCamera ? '已切换到前置摄像头' : '已切换到后置摄像头',
+		icon: 'none',
+		duration: 1500
+	});
+};
+
+// 发送消息
+const sendMessage = () => {
+	if (!messageContent.value.trim()) return;
+
+	const message = liveStore.sendMessage({
+		userId: userStore.userId,
+		userName: userStore.userName,
+		userAvatar: userStore.userAvatar,
+		content: messageContent.value,
+		type: 'text'
+	});
+
+	// 清空输入框
+	messageContent.value = '';
+
+	// 设置最后一条消息ID，用于滚动到底部
+	lastMessageId.value = message.id;
+};
+
+// 点赞
+const handleLike = () => {
+	liveStore.addLike();
+};
+
+// 分享
+const handleShare = () => {
+	uni.showActionSheet({
+		itemList: ['分享到微信', '分享到朋友圈', '复制链接'],
+		success: (res) => {
+			liveStore.addShare();
+			uni.showToast({
+				title: '分享成功',
+				icon: 'success'
+			});
+		}
+	});
+};
+
+// 礼物
+const handleGift = () => {
+	uni.showActionSheet({
+		itemList: ['鲜花 (10币)', '掌声 (50币)', '火箭 (100币)'],
+		success: (res) => {
+			let giftInfo = {};
+
+			switch (res.tapIndex) {
+				case 0:
+					giftInfo = {
+						giftId: 'gift_flower',
+						giftName: '鲜花',
+						giftImage: '/static/images/gift-flower.png',
+						giftValue: 10
+					};
+					break;
+				case 1:
+					giftInfo = {
+						giftId: 'gift_applause',
+						giftName: '掌声',
+						giftImage: '/static/images/gift-applause.png',
+						giftValue: 50
+					};
+					break;
+				case 2:
+					giftInfo = {
+						giftId: 'gift_rocket',
+						giftName: '火箭',
+						giftImage: '/static/images/gift-rocket.png',
+						giftValue: 100
+					};
+					break;
+			}
+
+			liveStore.sendGift({
+				userId: userStore.userId,
+				userName: userStore.userName,
+				userAvatar: userStore.userAvatar,
+				...giftInfo
+			});
+
+			uni.showToast({
+				title: '赠送成功',
+				icon: 'success'
+			});
+		}
+	});
+};
+
+// 结束直播（主播）
+const endLive = async () => {
+	uni.showModal({
+		title: '结束直播',
+		content: '确定要结束当前直播吗？',
+		success: async (res) => {
+			if (res.confirm) {
+				// 显示加载中
+				uni.showLoading({
+					title: '结束直播中...'
+				});
+
+				try {
+					// 停止本地预览
+					await trtcStore.stopLocalPreview();
+
+					// 结束直播
+					await liveStore.endLive();
+
+					// 离开TRTC房间
+					await trtcStore.leaveRoom();
+
+					// 销毁TRTC
+					await trtcStore.destroyTrtc();
+
+					// 隐藏加载中
+					uni.hideLoading();
+
+					// 返回上一页
+					uni.navigateBack();
+				} catch (error) {
+					// 隐藏加载中
+					uni.hideLoading();
+
+					// 显示错误提示
+					uni.showToast({
+						title: error.message || '结束直播失败',
+						icon: 'none'
+					});
+				}
+			}
+		}
+	});
+};
+
+// 离开房间（观众）
+const leaveRoom = async () => {
+	// 显示加载中
+	uni.showLoading({
+		title: '离开房间中...'
+	});
+
+	try {
+		// 离开直播间
+		await liveStore.leaveLiveRoom(userStore.userId);
+
+		// 离开TRTC房间
+		await trtcStore.leaveRoom();
+
+		// 销毁TRTC
+		await trtcStore.destroyTrtc();
+
+		// 隐藏加载中
+		uni.hideLoading();
+
+		// 返回上一页
+		uni.navigateBack();
+	} catch (error) {
+		// 隐藏加载中
+		uni.hideLoading();
+
+		// 显示错误提示
+		uni.showToast({
+			title: error.message || '离开房间失败',
+			icon: 'none'
+		});
+	}
+};
+
+// 初始化本地预览（主播）
+const initLocalPreview = async () => {
+	if (isAnchor.value) {
+		try {
+			// 启动本地预览
+			await trtcStore.startLocalPreview(localViewId.value);
+		} catch (error) {
+			uni.showToast({
+				title: error.message || '启动本地预览失败',
+				icon: 'none'
+			});
+		}
+	}
+};
+
+// 加入房间
+const joinRoom = async () => {
+	if (!roomId.value) return;
+
+	// 显示加载中
+	uni.showLoading({
+		title: '加入房间中...'
+	});
+
+	try {
+		// 初始化TRTC
+		await trtcStore.initTrtc();
+
+		// 加入直播间
+		await liveStore.joinLiveRoom(roomId.value, {
+			userId: userStore.userId,
+			userName: userStore.userName,
+			userAvatar: userStore.userAvatar
+		});
+
+		// 加入TRTC房间
+		await trtcStore.joinRoom({
+			roomId: roomId.value,
+			userId: userStore.userId,
+			userSig: userStore.userInfo.userSig,
+			sdkAppId: userStore.userInfo.sdkAppId,
+			role: 'audience' // 作为观众加入
+		});
+
+		// 隐藏加载中
+		uni.hideLoading();
+	} catch (error) {
+		// 隐藏加载中
+		uni.hideLoading();
+
+		// 显示错误提示
+		uni.showToast({
+			title: error.message || '加入房间失败',
+			icon: 'none'
+		});
+
+		// 返回上一页
+		uni.navigateBack();
+	}
+};
+
+onMounted(() => {
+	// 获取页面参数
+	const query = uni.getEnterOptionsSync().query;
+
+	if (query && query.roomId) {
+		roomId.value = query.roomId;
+
+		// 如果是主播，初始化本地预览
+		if (userStore.userId === liveStore.anchor.id) {
+			initLocalPreview();
+		} else {
+			// 如果是观众，加入房间
+			joinRoom();
+		}
+	} else {
+		uni.showToast({
+			title: '房间ID不存在',
+			icon: 'none'
+		});
+		uni.navigateBack();
+	}
+});
+
+onUnmounted(() => {
+	// 如果是主播，停止本地预览
+	if (isAnchor.value) {
+		trtcStore.stopLocalPreview();
+	}
+
+	// 如果是主播，结束直播
+	if (isAnchor.value && liveStore.liveStatus === 'live') {
+		liveStore.endLive();
+	}
+
+	// 如果是观众，离开直播间
+	if (!isAnchor.value) {
+		liveStore.leaveLiveRoom(userStore.userId);
+	}
+
+	// 离开TRTC房间
+	trtcStore.leaveRoom();
+
+	// 销毁TRTC
+	trtcStore.destroyTrtc();
+});
+</script>
+
+<style>
+/* 页面容器 */
+.page-container {
+	flex: 1;
+	flex-direction: column;
+	background-color: #1a1a1a;
+	width: 750rpx;
+	height: 100vh;
+}
+
+/* 视频容器 */
+.video-container {
+	position: relative;
+	width: 750rpx;
+	height: 60vh;
+	background-color: #000000;
+}
+
+/* 本地视频和远程视频 */
+.local-video, .remote-video {
+	width: 750rpx;
+	height: 60vh;
+}
+
+/* 视频视图 */
+.video-view {
+	width: 750rpx;
+	height: 60vh;
+}
+
+/* 占位视频 */
+.placeholder-video {
+	width: 750rpx;
+	height: 60vh;
+	justify-content: center;
+	align-items: center;
+	background-color: #333333;
+}
+
+/* 占位文本 */
+.placeholder-text {
+	color: #ffffff;
+	font-size: 32rpx;
+}
+
+/* 直播信息 */
+.live-info {
+	position: absolute;
+	top: 30rpx;
+	left: 30rpx;
+	right: 30rpx;
+	flex-direction: column;
+}
+
+/* 主播信息 */
+.anchor-info {
+	flex-direction: row;
+	align-items: center;
+	margin-bottom: 10rpx;
+}
+
+/* 主播头像 */
+.anchor-avatar {
+	width: 80rpx;
+	height: 80rpx;
+	border-radius: 40rpx;
+	margin-right: 20rpx;
+	border: 2rpx solid #ffffff;
+}
+
+/* 主播名称 */
+.anchor-name {
+	color: #ffffff;
+	font-size: 32rpx;
+	font-weight: bold;
+	margin-right: 20rpx;
+}
+
+/* 观众数量 */
+.viewer-count {
+	background-color: rgba(0, 0, 0, 0.5);
+	border-radius: 30rpx;
+	padding: 5rpx 20rpx;
+}
+
+/* 观众数量文本 */
+.viewer-count-text {
+	color: #ffffff;
+	font-size: 24rpx;
+}
+
+/* 直播标题 */
+.live-title {
+	color: #ffffff;
+	font-size: 28rpx;
+	margin-top: 10rpx;
+}
+
+/* 视频控制按钮 */
+.video-controls {
+	position: absolute;
+	bottom: 30rpx;
+	left: 30rpx;
+	right: 30rpx;
+	flex-direction: row;
+	justify-content: space-around;
+}
+
+/* 控制按钮 */
+.control-button {
+	background-color: rgba(0, 0, 0, 0.5);
+	border-radius: 10rpx;
+	padding: 10rpx 20rpx;
+	flex-direction: column;
+	align-items: center;
+}
+
+/* 控制图标 */
+.control-icon {
+	font-size: 40rpx;
+	margin-bottom: 5rpx;
+}
+
+/* 控制文本 */
+.control-text {
+	color: #ffffff;
+	font-size: 24rpx;
+}
+
+/* 互动容器 */
+.interaction-container {
+	flex: 1;
+	flex-direction: column;
+	padding: 20rpx;
+	background-color: #1a1a1a;
+}
+
+/* 消息列表 */
+.message-list {
+	flex: 1;
+	height: 25vh;
+	margin-bottom: 20rpx;
+}
+
+/* 消息项 */
+.message-item {
+	flex-direction: row;
+	margin-bottom: 15rpx;
+	flex-wrap: wrap;
+}
+
+/* 消息发送者 */
+.message-sender {
+	color: #ffcc00;
+	font-size: 28rpx;
+	margin-right: 10rpx;
+}
+
+/* 消息内容 */
+.message-content {
+	color: #ffffff;
+	font-size: 28rpx;
+	flex: 1;
+}
+
+/* 输入区域 */
+.input-area {
+	flex-direction: row;
+	align-items: center;
+	margin-bottom: 20rpx;
+}
+
+/* 消息输入框 */
+.message-input {
+	flex: 1;
+	background-color: #333333;
+	border-radius: 40rpx;
+	padding: 15rpx 30rpx;
+	color: #ffffff;
+	font-size: 28rpx;
+	margin-right: 20rpx;
+	height: 80rpx;
+}
+
+/* 发送按钮 */
+.send-button {
+	background-color: #007aff;
+	color: #ffffff;
+	border-radius: 40rpx;
+	width: 120rpx;
+	height: 80rpx;
+	line-height: 80rpx;
+	text-align: center;
+	font-size: 28rpx;
+}
+
+/* 操作按钮 */
+.action-buttons {
+	flex-direction: row;
+	justify-content: space-around;
+	padding: 20rpx 0;
+}
+
+/* 操作按钮项 */
+.action-button {
+	flex-direction: column;
+	align-items: center;
+}
+
+/* 操作图标 */
+.action-icon {
+	font-size: 40rpx;
+	margin-bottom: 10rpx;
+}
+
+/* 操作文本 */
+.action-text {
+	color: #ffffff;
+	font-size: 24rpx;
+}
+
+/* 结束直播按钮 */
+.end-live {
+	background-color: #ff3b30;
+	border-radius: 40rpx;
+	padding: 10rpx 30rpx;
+}
+
+/* 离开房间按钮 */
+.leave-room {
+	background-color: #ff9500;
+	border-radius: 40rpx;
+	padding: 10rpx 30rpx;
+}
+</style>

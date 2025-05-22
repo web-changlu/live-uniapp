@@ -1,0 +1,100 @@
+{
+	"name": "TRTCCloudUniPlugin-TRTCCloudImpl",
+	"id": "TRTCCloudUniPlugin-TRTCCloudImpl",
+	"version": "1.4.5",
+	"description": "uni示例插件",
+	"_dp_type": "nativeplugin",
+	"_dp_nativeplugin": {
+		"ios": {
+			"plugins": [{
+				"type": "module",
+				"name": "TRTCCloudUniPlugin-TRTCCloudImpl",
+				"class": "TRTCCloudImpl"
+			}, {
+				"type": "component",
+				"name": "TRTCCloudUniPlugin-TXLocalViewComponent",
+				"class": "TXLocalViewComponent"
+			}, {
+				"type": "component",
+				"name": "TRTCCloudUniPlugin-TXRemoteViewComponent",
+				"class": "TXRemoteViewComponent"
+			}, {
+					"type": "module",
+					"name": "TRTCCloudUniPlugin-TRTCCloudImpl-TXAudioEffectManagerModule",
+					"class": "TXAudioEffectManagerModule"
+			}],
+			"frameworks": [
+				"TXFFmpeg.framework",
+				"TXLiteAVSDK_Professional.framework",
+				"TRTCCloudUniPlugin.framework",
+				"TXSoundTouch.framework",
+				"Accelerate.framework",
+				"AssetsLibrary.framework",
+				"AudioToolBox.framework",
+				"AVFoundation.framework",
+				"CoreGraphics.framework",
+				"CoreMedia.framework",
+				"CoreTelephony.framework",
+				"Foundation.framework",
+				"libc++.tbd",
+				"libiconv.tdb",
+				"libresolv.tdb",
+				"libsqlite3.tdb",
+				"libyuv.a",
+				"libz.tdb",
+				"MediaPlayer.framework",
+				"Security.framework",
+				"SystemConfiguration.framework",
+				"VideoToolbox.framework",
+				"UIKit.framework",
+				"CFNetwork.framework",
+				"libSDWebImage.a",
+				"ReplayKit.framework",
+				"CoreServices.framework",
+				"CoreMotion.framework",
+				"MetalKit.framework",
+				"MetalPerformanceShaders.framework"
+			],
+			"integrateType": "framework",
+			"deploymentTarget": "9.0",
+			"validArchitectures": [
+				"arm64", "armv7"
+			],
+			"privacies": [
+				"NSPhotoLibraryUsageDescription", "NSPhotoLibraryAddUsageDescription", "NSCameraUsageDescription", "NSMicrophoneUsageDescription"
+			]
+		},
+		"android": {
+		  "plugins": [
+				{
+					"type": "component",
+					"name": "TRTCCloudUniPlugin-TXLocalViewComponent",
+					"class": "com.tencent.qcloud.uniplugin.trtccloud.TXLocalViewComponent"
+				},
+				{
+					"type": "component",
+					"name": "TRTCCloudUniPlugin-TXRemoteViewComponent",
+					"class": "com.tencent.qcloud.uniplugin.trtccloud.TXRemoteViewComponent"
+				},
+				{
+					"type": "module",
+					"name": "TRTCCloudUniPlugin-TRTCCloudImpl",
+					"class": "com.tencent.qcloud.uniplugin.trtccloud.TRTCCloudImpl"
+				},
+				{
+					"type": "module",
+					"name": "TRTCCloudUniPlugin-TRTCCloudImpl-TXAudioEffectManagerModule",
+					"class": "com.tencent.qcloud.uniplugin.trtccloud.TXAudioEffectManagerModule"
+				}
+			],
+		  "integrateType": "aar",
+			"validArchitectures": [
+				"arm64", "armv7"
+			],
+			"dependencies": [
+				"androidx.appcompat:appcompat:1.3.1",
+				"com.tencent.liteav:LiteAVSDK_Professional:12.2.0.15072"
+			]
+		}
+	}
+}

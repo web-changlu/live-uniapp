@@ -1,0 +1,306 @@
+<template>
+	<div class="trtc-container">
+		<view class="trtc-video-area">
+			<view class="trtc-video-view" id='root'>
+				<trtc-local-view :viewId="userId" style="height: 403.84rpx;flex: 1;"></trtc-local-view>
+			</view>
+			<view class="trtc-video-view">
+				<trtc-remote-view v-if="remoteUserId" :userId="remoteUserId" :viewId="remoteUserId" style="height: 403.84rpx;flex: 1">
+				</trtc-remote-view>
+			</view>
+		</view>
+		<view class="trtc-title-container">
+			<text class="trtc-title-text" style="text-align: center;">Local Preview</text>
+			<text class="trtc-title-text" style="text-align: center;">Remote View</text>
+		</view>
+
+		<view class="trtc-row-area">
+			<text class="trtc-title-text">roomId</text>
+			<input type="text">
+			<input class="trtc-input" style="width: 182.69rpx;" type="number" auto-blur=true :value="roomId"
+				@input="bindInputChange($event, 'roomId')" />
+			<text class="trtc-title-text">userId</text>
+			<input class="trtc-input" style="width: 182.69rpx;" auto-blur=true :value="userId"
+				@input="bindInputChange($event, 'userId')" />
+		</view>
+		<view class="trtc-line"></view>
+		<button class="trtc-btn-long" style="margin-top: 20rpx;" type="primary" @click="enterRoom">Enter Room</button>
+    <button class="trtc-btn-long" style="margin-top: 20rpx;" type="primary" @click="startLocalPreview">Start Local Preview</button>
+		<button class="trtc-btn-long" style="margin-top: 20rpx;" type="primary" @click="startPlayMusic">Start Play Music</button>
+		<button class="trtc-btn-long" style="margin-top: 20rpx;" type="primary" @click="pausePlayMusic">pause Play Music</button>
+		<button class="trtc-btn-long" style="margin-top: 20rpx;" type="primary" @click="resumePlayMusic">resume Play Music</button>
+		<button class="trtc-btn-long" style="margin-top: 20rpx;" type="primary" @click="stopPlayMusic">Stop Play Music</button>
+		<button class="trtc-btn-long" style="margin-top: 20rpx;" type="primary" @click="exitRoom">Exit Room</button>
+		<button class="trtc-btn-long" type="primary" @click="destroyInstance">Destroy TrtcCloud</button>
+	</div>
+</template>
+
+<script>
+	import permision from "@/TrtcCloud/permission.js";
+	import TrtcCloud from '@/TrtcCloud/lib/index';
+	import { TRTCAppScene, TRTCVideoStreamType, TRTCVideoRotation } from '@/TrtcCloud/lib/TrtcDefines';
+	import genTestUserSig from '@/debug/GenerateTestUserSig';
+	import TrtcLocalView from '@/TrtcCloud/view/TrtcLocalView';
+	import TrtcRemoteView from '@/TrtcCloud/view/TrtcRemoteView';
+	const roomId = Math.floor(Math.random() * 100000).toString();
+	const userId = 'user_' + Math.floor(Math.random() * 100000).toString();
+
+	export default {
+		components: {
+			TrtcLocalView: TrtcLocalView,
+			TrtcRemoteView: TrtcRemoteView,
+		},
+		data() {
+			return {
+				trtcCloud: null,
+				sdkAppId: 0,
+				userSig: '',
+				roomId: Math.floor(Math.random() * 100000),
+				userId: 'user_' + Math.floor(Math.random() * 100000).toString(),
+				appScene: TRTCAppScene.TRTCAppSceneVideoCall, // TRTCAppSceneVideoCall
+				isFrontCamera: true,
+				streamType: TRTCVideoStreamType.TRTCVideoStreamTypeBig,
+				remoteUserId: '',
+				musicId: 1,
+				musicFilePath: '',
+			}
+		},
+		mounted() {
+			if (uni.getSystemInfoSync().platform === 'android') {
+				permision.requestAndroidPermission('android.permission.RECORD_AUDIO');
+				permision.requestAndroidPermission('android.permission.CAMERA');
+			}
+
+			// 生成 userSig
+			const { sdkAppId, userSig } = genTestUserSig(this.userId);
+			this.sdkAppId = sdkAppId;
+			this.userSig = userSig;
+			if (!sdkAppId || !userSig) {
+				uni.showToast({
+					title: '请填写 sdkAppId、userSig',
+					icon: 'none'
+				});
+			}
+			
+			// 保存音频文件到本地: https://zh.uniapp.dcloud.io/api/file/file.html#savefile
+			// const tempFilePath = '../../../static/rain.mp3';
+			// uni.saveFile({
+			// 	tempFilePath: tempFilePath,
+			// 	success: (res) => {
+			// 		console.warn('--- save 成功 = ', JSON.stringify(res)); // 获取的是相对路径
+			// 		plus
+			// 	},
+			// });
+			
+			const androidPath = '_doc/uniapp_save/16723976767290.mp3'; // 通过 uni.saveFile 获取的相对路径
+			const iosPath = '_doc/uniapp_save/16723970195190.mp3'; // 通过 uni.saveFile 获取的相对路径
+			const info = uni.getSystemInfo({
+				success: (res) => {
+					let path = '';
+					if (res.platform === 'ios') {
+						path = plus.io.convertLocalFileSystemURL(iosPath); // 转绝对路径
+					}
+					if (res.platform === 'android') {
+						path = plus.io.convertLocalFileSystemURL(androidPath); // 转绝对路径
+					}
+					this.musicFilePath = path;
+					this.musicFilePath = 'https://web.sdk.qcloud.com/component/TUIKit/assets/uni-app/calling-bell-1.mp3'; // 网路路径
+				}
+			})
+			
+			// 【1】创建实例
+			this.createTrtcCloud();
+		},
+    unmounted() {
+			this.handleUninstallEvents();
+		},
+		onUnload() {
+			this.destroyInstance();
+			console.log('- onUnload');
+		},
+		onBackPress() {
+			this.destroyInstance();
+		},
+		methods: {
+			bindInputChange(event, type) {
+				const value = event.detail.value;
+				switch (type) {
+					case 'roomId': {
+						this.roomId = value;
+						break;
+					}
+					case 'userId': {
+						this.userId = value;
+						break;
+					}
+				}
+			},
+			destroyInstance() {
+				if (this.trtcCloud) {
+					TrtcCloud.destroyInstance();
+					this.trtcCloud = null;
+					uni.showToast({
+						title: '销毁实例',
+						icon: 'none'
+					});
+				}
+			},
+			createTrtcCloud() {
+				uni.showToast({
+					title: '创建实例 ',
+					icon: 'none',
+				});
+				this.trtcCloud = TrtcCloud.createInstance();
+				this.handleEvents();
+			},
+			enterRoom() {
+				try {
+          
+          // 【2】进房
+					const { roomId, userId, sdkAppId, appScene, userSig } = this;
+					let param = { roomId: +roomId, userId, sdkAppId, userSig };
+					this.trtcCloud.enterRoom(param, appScene);
+					uni.showToast({
+						title: 'enterRoom ',
+						icon: 'none',
+					});
+				} catch (error) {
+					console.log(`enterRoom error = ${JSON.stringify(error)}`);
+				}
+			},
+			exitRoom() {
+				try {
+					this.stopLocalPreview();
+					this.stopRemoteView();
+          this.stopLocalAudio();
+					this.trtcCloud.exitRoom();
+          this.remoteUserId = '';
+				} catch (e) {
+					// TODO handle the exception
+				}
+			},
+      // 本地预览
+			startLocalPreview() {
+				this.trtcCloud.startLocalPreview(this.isFrontCamera, this.userId);
+				uni.showToast({
+					title: 'localPreview',
+					icon: 'none',
+				});
+			},
+			stopLocalPreview() {
+				this.trtcCloud.stopLocalPreview();
+			},
+			stopRemoteView() {
+				if (this.remoteUserId) {
+					this.trtcCloud.stopRemoteView(this.remoteUserId, this.streamType);
+				}
+			},
+			// 背景音效
+			startPlayMusic() {
+				const musicParam = {
+					id: this.musicId,
+					path: this.musicFilePath, // TODO: 文件路径详细说明, 官网文档更新, 增加常见问题及智能客服
+					loopCount: 1,
+					publish: true,
+					isShortFile: false,
+					startTimeMS: 0,
+					endTimeMS: 0,
+				};
+   			this.trtcCloud.startPlayMusic(musicParam);
+			},
+			pausePlayMusic() {
+				this.trtcCloud.pausePlayMusic(this.musicId);
+			},
+			resumePlayMusic() {
+				this.trtcCloud.resumePlayMusic(this.musicId);
+			},
+			stopPlayMusic() {
+				this.trtcCloud.stopPlayMusic(this.musicId);
+			},
+
+			handleEvents() {
+				this.trtcCloud.on('onWarning', (res) => {
+					uni.showToast({
+						title: `onWarning: ${JSON.stringify(res)}`,
+						icon: 'none',
+					});
+				});
+				this.trtcCloud.on('onError', (res) => {
+					console.log('- onError: ', JSON.stringify(res));
+					uni.showToast({
+						title: `error: ${JSON.stringify(res)}`,
+						icon: 'none',
+					});
+				});
+				this.trtcCloud.on('onStart', (res) => {
+					console.log('- onStart: ', JSON.stringify(res));
+				});
+				this.trtcCloud.on('onPlayPrograss', (res) => {
+					console.log('- onPlayPrograss: ', JSON.stringify(res));
+				});
+				this.trtcCloud.on('onComplete', (res) => {
+					console.log('- onComplete: ', JSON.stringify(res));
+				});
+				this.trtcCloud.on('onEnterRoom', (result) => {
+					console.log(`- onEnterRoom = ${result}`);
+					if (result > 0) {
+						uni.showToast({
+							title: `进房成功，耗时: ${result}ms`,
+							icon: 'none',
+						});
+					} else {
+						console.log(`enter room failed，error code = ${result}`);
+					}
+				});
+				this.trtcCloud.on('onExitRoom', (reason) => {
+					const reasonList = ['主动调用 exitRoom 退房', '被服务器踢出当前房间', '当前房间整个被解散'];
+					uni.showToast({
+						title: `退房 ${reasonList[reason]}`,
+						icon: 'none',
+						duration: 1000
+					});
+				});
+				this.trtcCloud.on('onFirstVideoFrame', (res) => {
+					console.log(`渲染的首帧画面响应 = ${JSON.stringify(res)}`);
+				});
+				this.trtcCloud.on('onRemoteUserEnterRoom', (userId) => {
+					this.remoteUserId = userId;
+					uni.showToast({
+						title: `远端进房: userId = ${userId}`,
+						icon: 'none',
+					});
+				});
+				this.trtcCloud.on('onUserVideoAvailable', (res) => {
+					const {
+						userId,
+						available
+					} = res;
+					if (userId && available) {
+						this.remoteUserId = userId;
+            this.trtcCloud.startRemoteView(this.remoteUserId, this.streamType, this.remoteUserId);
+					}
+				});
+			},
+      handleUninstallEvents() {
+				this.trtcCloud.off('*');
+			}
+		}
+	}
+</script>
+
+<style>
+	.radio-group-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: space-around;
+		margin-top: 16px;
+		flex-wrap: wrap;
+	}
+	.item-container {
+		width: 375rpx;
+		display: flex;
+		flex-direction: row;
+		margin-bottom: 14rpx;
+	}
+</style>

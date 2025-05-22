@@ -1,0 +1,31 @@
+<template>
+  <view class="trtc-local-view" :id="viewId"></view>
+</template>
+
+<script>
+export default {
+  name: 'trtc-local-view',
+  props: {
+    viewId: {
+      type: String,
+      required: true
+    }
+  },
+  data() {
+    return {}
+  },
+  mounted() {
+    // 组件挂载后，可以在这里进行一些初始化操作
+    // 例如通知父组件视图已准备好
+    this.$emit('ready', this.viewId);
+  }
+}
+</script>
+
+<style>
+.trtc-local-view {
+  width: 750rpx;
+  height: 100%;
+  background-color: #000000;
+}
+</style>

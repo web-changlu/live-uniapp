@@ -1,0 +1,118 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "腾讯云音视频"
+			}
+		},
+		{
+			"path": "pages/live/index",
+			"style": {
+				"navigationBarTitleText": "直播"
+			}
+		},
+		{
+			"path": "pages/live/detail/index",
+			"style": {
+				"navigationBarTitleText": "直播间",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/examples/1v1/index",
+			"style": {
+				"navigationBarTitleText": "1v1音视频"
+			}
+		},
+		{
+			"path": "pages/examples/multiCall/index",
+			"style": {
+				"navigationBarTitleText": "多人音视频"
+			}
+		},
+		{
+			"path": "pages/examples/videoCall/index",
+			"style": {
+				"navigationBarTitleText": "视频"
+			}
+		},
+		{
+			"path": "pages/examples/videoRenderSet/index",
+			"style": {
+				"navigationBarTitleText": "本地画面渲染设置"
+			}
+		},
+		{
+			"path": "pages/examples/remoteVideoRenderSet/index",
+			"style": {
+				"navigationBarTitleText": "远端画面渲染设置"
+			}
+		},
+		{
+			"path": "pages/examples/videoEncodeSet/index",
+			"style": {
+				"navigationBarTitleText": "本地画面编码设置"
+			}
+		},
+		{
+			"path": "pages/examples/audioCall/index",
+			"style": {
+				"navigationBarTitleText": "音频"
+			}
+		},
+		{
+			"path": "pages/examples/switchRole/index",
+			"style": {
+				"navigationBarTitleText": "角色切换"
+			}
+		},
+		{
+			"path": "pages/examples/localViewHover/index",
+			"style": {
+				"navigationBarTitleText": "本地预览自定义"
+			}
+		},
+		{
+			"path": "pages/examples/screenShare/index",
+			"style": {
+				"navigationBarTitleText": "屏幕分享"
+			}
+		},
+		{
+			"path": "pages/examples/snapShot/index",
+			"style": {
+				"navigationBarTitleText": "截屏"
+			}
+		},
+		{
+			"path": "pages/examples/playMusic/index",
+			"style": {
+				"navigationBarTitleText": "背景音效"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "腾讯云音视频",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#F8F8F8"
+	},
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+			"trtc-local-view": "@/components/trtc/trtc-local-view.nvue",
+			"trtc-remote-view": "@/components/trtc/trtc-remote-view.nvue"
+		}
+	},
+	"condition": { //模式配置，仅开发期间生效
+		"current": 0, //当前激活的模式(list 的索引项)
+		"list": [
+			{
+				"name": "", //模式名称
+				"path": "", //启动页面，必选
+				"query": "" //启动参数，在页面的onLoad函数里面得到
+			}
+		]
+	}
+}
