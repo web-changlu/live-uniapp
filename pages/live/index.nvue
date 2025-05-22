@@ -43,7 +43,6 @@ import { useUserStore } from '@/store/modules/user';
 import { useTrtcStore } from '@/store/modules/trtc';
 
 // 使用store
-console.log(useLiveStore, 'useLiveStore')
 const liveStore = useLiveStore();
 const userStore = useUserStore();
 const trtcStore = useTrtcStore();
