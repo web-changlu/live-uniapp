@@ -33,9 +33,6 @@ pnpm-debug.log*
 .DS_Store
 Thumbs.db
 
-# 调试目录
-/debug/
-
 # 临时文件
 *.log
 *.tmp
