@@ -1,11 +1,13 @@
 <template>
 	<view class="page-container">
-		<!-- 直播视频区域 -->
 		<view class="video-container">
 			<!-- 本地视频预览 -->
 			<view v-if="isAnchor" class="local-video">
 				<!-- TRTC的本地视频预览组件 -->
-				<trtc-local-view v-if="trtcStore.localStream.videoEnabled" class="video-view" :viewId="localViewId"></trtc-local-view>
+						<!-- 直播视频区域 -->
+		 <text class="page-title">直播房间号: {{ roomId }}</text>
+		 <text class="page-title">userid: {{ userStore.userId }}</text>
+		 <trtc-local-view v-if="trtcStore.localStream.videoEnabled" :viewId="localViewId" style="height: 500rpx;"></trtc-local-view>
 				<view v-else class="placeholder-video">
 					<text class="placeholder-text">摄像头已关闭</text>
 				</view>
@@ -14,7 +16,9 @@
 			<!-- 远程视频 -->
 			<view v-else class="remote-video">
 				<!-- TRTC的远程视频预览组件 -->
-				<trtc-remote-view v-if="hasRemoteStream" class="video-view" :viewId="remoteViewId" :userId="liveStore.anchor.id"></trtc-remote-view>
+				<trtc-remote-view v-if="hasRemoteStream" 
+				style="height: 400rpx;"
+				class="video-view" :viewId="remoteViewId" :userId="liveStore.anchor.id"></trtc-remote-view>
 				<view v-else class="placeholder-video">
 					<text class="placeholder-text">等待主播开播...</text>
 				</view>
@@ -92,9 +96,12 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import permision from "@/TrtcCloud/permission.js";
+import { onLoad,onUnload,onBackPress } from '@dcloudio/uni-app';
 import { useLiveStore } from '@/store/modules/live';
 import { useUserStore } from '@/store/modules/user';
 import { useTrtcStore } from '@/store/modules/trtc';
+import TrtcLocalView from '@/TrtcCloud/view/TrtcLocalView';
 
 // 使用store
 const liveStore = useLiveStore();
@@ -107,7 +114,9 @@ const messageContent = ref('');
 const lastMessageId = ref('');
 
 // 视频视图ID
-const localViewId = ref('local-video-view');
+// const localViewId = ref('local-video-view');
+let localViewId =  'local-video-view';
+// localViewId = userStore.userId;	
 const remoteViewId = ref('remote-video-view');
 
 // 计算属性
@@ -126,7 +135,7 @@ const toggleVideo = async () => {
 
 	if (enabled && !trtcStore.localStream.videoView) {
 		// 如果开启视频且没有视图，则启动本地预览
-		await trtcStore.startLocalPreview(localViewId.value);
+		await trtcStore.startLocalPreview(localViewId);
 	}
 };
 
@@ -316,8 +325,21 @@ const leaveRoom = async () => {
 const initLocalPreview = async () => {
 	if (isAnchor.value) {
 		try {
+			console.log('开始初始化本地预览');
 			// 启动本地预览
-			await trtcStore.startLocalPreview(localViewId.value);
+			const localViewRes =  await trtcStore.startLocalPreview(localViewId);
+			console.log('localViewRes', JSON.stringify(localViewRes) );
+			if(localViewRes.success) {
+				uni.showToast({
+					title: '本地预览启动成功',
+					icon: 'success'
+				});
+			} else {
+				uni.showToast({
+					title: localViewRes.error || '启动本地预览失败',
+					icon: 'none'
+				});
+			}
 		} catch (error) {
 			uni.showToast({
 				title: error.message || '启动本地预览失败',
@@ -372,20 +394,29 @@ const joinRoom = async () => {
 		uni.navigateBack();
 	}
 };
-
-onMounted(() => {
-	// 获取页面参数
-	const query = uni.getEnterOptionsSync().query;
-
-	if (query && query.roomId) {
-		roomId.value = query.roomId;
-
+const checkPermission = () => {
+	if (uni.getSystemInfoSync().platform === 'android') {
+		permision.requestAndroidPermission('android.permission.RECORD_AUDIO');
+		permision.requestAndroidPermission('android.permission.CAMERA');
+	}
+}
+onLoad(async (option) => {
+	console.log('onLoad触发----->', JSON.stringify(option) );
+	checkPermission()
+	console.log('option', JSON.stringify(option) );
+	if (option && option.roomId) {
+		roomId.value = option.roomId;
+	}
+	if (roomId.value) {
 		// 如果是主播，初始化本地预览
 		if (userStore.userId === liveStore.anchor.id) {
+			console.log(roomId.value,'开始直播');
+			await liveStore.startLive()
 			initLocalPreview();
+			
 		} else {
 			// 如果是观众，加入房间
-			joinRoom();
+			await joinRoom();
 		}
 	} else {
 		uni.showToast({
@@ -394,14 +425,15 @@ onMounted(() => {
 		});
 		uni.navigateBack();
 	}
+})
+
+onMounted(async () => {
+	console.log('onMounted触发-----' );
 });
 
-onUnmounted(() => {
-	// 如果是主播，停止本地预览
-	if (isAnchor.value) {
-		trtcStore.stopLocalPreview();
-	}
 
+const destoryHandle = () => {
+	console.log('destoryHandle触发-----' );
 	// 如果是主播，结束直播
 	if (isAnchor.value && liveStore.liveStatus === 'live') {
 		liveStore.endLive();
@@ -415,9 +447,19 @@ onUnmounted(() => {
 	// 离开TRTC房间
 	trtcStore.leaveRoom();
 
-	// 销毁TRTC
+	// 销毁TRTC 销毁再次进有问题
 	trtcStore.destroyTrtc();
+}
+onUnmounted(() => {
+	destoryHandle();
 });
+onUnload(() => {
+	destoryHandle();
+})
+onBackPress(() => {
+	destoryHandle();
+})
+
 </script>
 
 <style>
@@ -425,35 +467,36 @@ onUnmounted(() => {
 .page-container {
 	flex: 1;
 	flex-direction: column;
-	background-color: #1a1a1a;
+	/* background-color: #1a1a1a; */
 	width: 750rpx;
-	height: 100vh;
+	padding-top: 60rpx;
 }
 
 /* 视频容器 */
 .video-container {
 	position: relative;
 	width: 750rpx;
-	height: 60vh;
-	background-color: #000000;
+	height: 900rpx;
+	background-color: rgb(28, 194, 206);
 }
 
 /* 本地视频和远程视频 */
 .local-video, .remote-video {
 	width: 750rpx;
-	height: 60vh;
+	height: 900rpx;
 }
 
 /* 视频视图 */
 .video-view {
 	width: 750rpx;
-	height: 60vh;
+	height: 400rpx;
+	flex: 1;
 }
 
 /* 占位视频 */
 .placeholder-video {
 	width: 750rpx;
-	height: 60vh;
+	height: 450rpx;
 	justify-content: center;
 	align-items: center;
 	background-color: #333333;
@@ -500,7 +543,7 @@ onUnmounted(() => {
 
 /* 观众数量 */
 .viewer-count {
-	background-color: rgba(0, 0, 0, 0.5);
+	/* background-color: rgba(0, 0, 0, 0.5); */
 	border-radius: 30rpx;
 	padding: 5rpx 20rpx;
 }
@@ -515,13 +558,13 @@ onUnmounted(() => {
 .live-title {
 	color: #ffffff;
 	font-size: 28rpx;
-	margin-top: 10rpx;
+	margin-top: 5rpx;
 }
 
 /* 视频控制按钮 */
 .video-controls {
 	position: absolute;
-	bottom: 30rpx;
+	bottom: 20rpx;
 	left: 30rpx;
 	right: 30rpx;
 	flex-direction: row;
@@ -560,7 +603,7 @@ onUnmounted(() => {
 /* 消息列表 */
 .message-list {
 	flex: 1;
-	height: 25vh;
+	height: 250rpx;
 	margin-bottom: 20rpx;
 }
 
@@ -643,9 +686,12 @@ onUnmounted(() => {
 
 /* 结束直播按钮 */
 .end-live {
-	background-color: #ff3b30;
+	width: 200rpx;
+	height: 60rpx;
 	border-radius: 40rpx;
 	padding: 10rpx 30rpx;
+	line-height: 60rpx;
+	background-color: #ff3b30;
 }
 
 /* 离开房间按钮 */

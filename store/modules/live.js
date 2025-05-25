@@ -1,5 +1,7 @@
 // store/modules/live.js
 import { defineStore } from 'pinia'
+import { useTrtcStore } from '@/store/modules/trtc';
+import { useUserStore } from '@/store/modules/user';
 
 export const useLiveStore = defineStore('live', {
   state: () => ({
@@ -85,32 +87,49 @@ export const useLiveStore = defineStore('live', {
         this.liveInfo.endTime = new Date()
       }
     },
-    
-    // 开始直播
-    async startLive(liveData) {
-      try {
-        this.loading = true
-        this.error = null
-        
+    setLiveData(liveData) {
+      //TODO 房间号从后端获取
+      const liveId = liveData.userId + Date.now()
         // 设置直播信息
         this.setLiveInfo({
           title: liveData.title,
           description: liveData.description,
           coverImage: liveData.coverImage,
-          id: 'live_' + liveData.userId + Date.now()
+          id: liveId
         })
-        
         // 设置主播信息
         this.anchor = {
           id: liveData.userId,
           name: liveData.userName || '主播',
-          avatar: liveData.userAvatar || ''
+          avatar: liveData.userAvatar || '',
         }
-        
+        return {
+          success: true,
+          liveId: this.liveInfo.id
+        }
+    },
+    // 开始直播
+    async startLive() {
+      try {
+        this.loading = true
+        this.error = null
         // 更新直播状态为准备中
         this.updateLiveStatus('preparing')
-        
-        // 这里可以添加实际的直播初始化逻辑，如连接TRTC等
+        const trtcStore = useTrtcStore();
+        const userStore = useUserStore();
+        // 初始化TRTC
+		    await trtcStore.initTrtc();
+        const joinResult = await trtcStore.joinRoom({
+          roomId: this.liveInfo.id,
+          userId: this.anchor.id,
+          userSig: userStore.userInfo.userSig,
+			    sdkAppId: userStore.userInfo.sdkAppId,
+          role: 'anchor' // 作为主播加入
+        });
+        console.log('加入房间结果：', JSON.stringify(joinResult), '角色：', 'anchor')
+        if (!joinResult.success) {
+          throw new Error(joinResult.error || '加入房间失败');
+        }
         
         // 更新直播状态为直播中
         this.updateLiveStatus('live')
@@ -121,6 +140,10 @@ export const useLiveStore = defineStore('live', {
         }
       } catch (error) {
         this.error = error.message || '开始直播失败'
+        // 重置直播状态
+		    tshi.resetLiveState();
+        // 返回上一页
+		    uni.navigateBack();
         return {
           success: false,
           error: this.error
@@ -137,7 +160,10 @@ export const useLiveStore = defineStore('live', {
         this.error = null
         
         // 这里可以添加实际的结束直播逻辑，如断开TRTC连接等
-        
+        const trtcStore = useTrtcStore();
+        trtcStore.stopLocalPreview();
+        trtcStore.stopLocalAudio();
+        trtcStore.leaveRoom();
         // 更新直播状态为已结束
         this.updateLiveStatus('ended')
         
@@ -195,7 +221,8 @@ export const useLiveStore = defineStore('live', {
         this.error = null
         
         // 这里可以添加实际的离开直播间逻辑，如断开TRTC连接等
-        
+        const trtcStore = useTrtcStore();
+        trtcStore.leaveRoom(this.anchor.id);
         // 从观众列表中移除
         const index = this.viewers.findIndex(viewer => viewer.id === userId)
         if (index !== -1) {
