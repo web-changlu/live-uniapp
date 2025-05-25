@@ -1,6 +1,7 @@
 // store/modules/trtc.js
 import { defineStore } from 'pinia'
 import TrtcCloud from '@/TrtcCloud/lib/index';
+import { TRTCAppScene, TRTCRoleType, TRTCVideoStreamType } from '@/TrtcCloud/lib/TrtcDefines';
 
 export const useTrtcStore = defineStore('trtc', {
   state: () => ({
@@ -60,6 +61,7 @@ export const useTrtcStore = defineStore('trtc', {
           this.trtcCloud = TrtcCloud.createInstance()
           this.handleEvents();
         }
+        console.log('TRTC实例初始化成功')
         return {
           success: true
         }
@@ -138,9 +140,9 @@ export const useTrtcStore = defineStore('trtc', {
         }
 
         // 开启本地预览
-        // 注意：这里的实际API调用可能需要根据TRTC SDK的具体实现进行调整
+        console.log('开启本地预览') 
         this.trtcCloud.startLocalPreview(true, viewId)
-
+        this.trtcCloud.startLocalAudio();
         // 保存视图ID
         this.localStream.videoView = viewId
 
@@ -208,11 +210,15 @@ export const useTrtcStore = defineStore('trtc', {
           userId: userId,
           userSig: userSig,
           roomId: parseInt(roomId),
-          role: role === 'anchor' ? 20 : 21, // 20是主播，21是观众
+          role: role === 'anchor' ? TRTCRoleType.TRTCRoleAnchor : TRTCRoleType.TRTCRoleAudience, // 主播，观众
+          businessInfo: {
+            // 自定义业务参数
+            appScene: 'live' // 直播场景
+          }
         }
 
         // 进入房间
-        this.trtcCloud.enterRoom(param)
+        this.trtcCloud.enterRoom(param, TRTCAppScene.TRTCAppSceneLIVE)
 
         // 更新连接状态
         this.connectionState = 'connected'
@@ -233,13 +239,16 @@ export const useTrtcStore = defineStore('trtc', {
     },
 
     // 离开房间
-    async leaveRoom() {
+    async leaveRoom(remoteUserId) {
       try {
         this.loading = true
         this.error = null
 
         if (this.trtcCloud && this.connectionState === 'connected') {
           // 使用TRTC API离开房间
+          if (remoteUserId) {
+            this.trtcCloud.stopRemoteView(remoteUserId)
+          }
           this.trtcCloud.exitRoom()
         }
 
@@ -461,7 +470,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
 
         // 这里可以添加实际的销毁TRTC逻辑
-
+        this.trtcCloud.destroyInstance()
         // 重置状态
         this.trtcCloud = null
         this.roomId = ''

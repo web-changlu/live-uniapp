@@ -136,5 +136,6 @@
     "uniStatistics" : {
         "enable" : false
     },
-    "vueVersion" : "3"
+    "vueVersion" : "3",
+    "locale" : "zh-Hans"
 }

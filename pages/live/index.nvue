@@ -45,10 +45,9 @@ import { useTrtcStore } from '@/store/modules/trtc';
 // 使用store
 const liveStore = useLiveStore();
 const userStore = useUserStore();
-const trtcStore = useTrtcStore();
 
-const liveTitle = ref('');
-const liveDescription = ref('');
+const liveTitle = ref('直播标题');
+const liveDescription = ref('直播描述');
 const coverImage = ref('');
 const userId = ref('user_' + Math.floor(Math.random() * 100000).toString());
 
@@ -78,36 +77,22 @@ const startLive = async () => {
 	});
 
 	try {
-		// 初始化TRTC
-		await trtcStore.initTrtc();
-
+		
 		// 开始直播
-		const liveResult = await liveStore.startLive({
+		const liveResult = await liveStore.setLiveData({
 			title: liveTitle.value,
 			description: liveDescription.value,
 			coverImage: coverImage.value,
 			userId: userStore.userId,
 			userName: userStore.userName,
-			userAvatar: userStore.userAvatar
+			userAvatar: userStore.userAvatar,
 		});
 
 		if (!liveResult.success) {
 			throw new Error(liveResult.error || '开始直播失败');
 		}
 
-		// 加入TRTC房间
 		const roomId = liveResult.liveId;
-		const joinResult = await trtcStore.joinRoom({
-			roomId,
-			userId: userStore.userId,
-			userSig: userStore.userInfo.userSig,
-			sdkAppId: userStore.userInfo.sdkAppId,
-			role: 'anchor' // 作为主播加入
-		});
-
-		if (!joinResult.success) {
-			throw new Error(joinResult.error || '加入房间失败');
-		}
 
 		// 隐藏加载中
 		uni.hideLoading();
@@ -134,9 +119,6 @@ const startLive = async () => {
 
 		// 重置直播状态
 		liveStore.resetLiveState();
-
-		// 销毁TRTC
-		trtcStore.destroyTrtc();
 	}
 };
 
@@ -150,7 +132,6 @@ const checkPermission = () => {
 const getUserSig = () => {
 	// 生成 userSig
 	const { sdkAppId: testAppId, userSig: testUserSign } = genTestUserSig(userId.value);
-
 	// 登录用户
 	userStore.login({
 		userId: userId.value,
