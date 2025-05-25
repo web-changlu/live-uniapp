@@ -23,6 +23,10 @@
 				  name: "直播",
 				  url: "/pages/live/index",
 				},
+				{
+				  name: "观看直播",
+				  url: "/pages/live-view/index",
+				},
               {
                 name: "1v1音视频",
                 url: "/pages/examples/1v1/index",

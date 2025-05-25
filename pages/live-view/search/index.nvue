@@ -1,0 +1,68 @@
+<template>
+	<view class="container">
+		<view class="search-box">
+			<uni-search-bar
+				v-model="searchValue"
+				placeholder="搜索直播间"
+				@confirm="search"
+				@clear="clear"
+			></uni-search-bar>
+		</view>
+		
+		<view class="result-list">
+			<uni-list>
+				<uni-list-item
+					v-for="(item, index) in searchResults"
+					:key="index"
+					:title="item.title"
+					:note="item.description"
+					:thumb="item.cover"
+					thumb-size="lg"
+					clickable
+					@click="enterRoom(item)"
+				></uni-list-item>
+			</uni-list>
+		</view>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				searchValue: '',
+				searchResults: []
+			}
+		},
+		methods: {
+			search() {
+				// TODO: 实现搜索逻辑
+				console.log('搜索关键词：', this.searchValue)
+			},
+			clear() {
+				this.searchValue = ''
+				this.searchResults = []
+			},
+			enterRoom(item) {
+				// TODO: 实现进入直播间逻辑
+				console.log('进入直播间：', item)
+			}
+		}
+	}
+</script>
+
+<style>
+	.container {
+		flex: 1;
+		background-color: #f5f5f5;
+	}
+	
+	.search-box {
+		padding: 20rpx;
+		background-color: #ffffff;
+	}
+	
+	.result-list {
+		margin-top: 20rpx;
+	}
+</style> 

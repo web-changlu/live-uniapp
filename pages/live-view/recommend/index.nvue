@@ -1,0 +1,241 @@
+<template>
+	<view class="container">
+		<view class="header">
+			<text class="title">推荐直播间</text>
+		</view>
+		<scroll-view class="room-list" scroll-y="true" :show-scrollbar="false" @scrolltolower="loadMore">
+			<view class="grid">
+				<view class="card" v-for="(item, index) in recommendList" :key="index" @click="enterRoom(item)">
+					<view class="card-img-wrap">
+						<image class="card-img" src="/static/recommend-title.png" mode="aspectFill" alt="直播间" />
+						<view class="card-info-overlay">
+							<view class="info-top">
+								<view class="city-badge">
+									<text class="city-icon">📍</text>
+									<text class="city">{{item.city}}</text>
+								</view>
+							</view>
+							<view class="info-bottom">
+								<view class="info-left">
+									<text class="nickname">{{item.nickname}}</text>
+									<text class="level-badge">Lv.{{item.level}}</text>
+									<text class="tag-badge">{{item.tag}}</text>
+								</view>
+								<view class="info-right">
+									<text class="hot-icon">🔥</text>
+									<text class="hot">{{item.hot}}</text>
+								</view>
+							</view>
+						</view>
+					</view>
+				</view>
+			</view>
+			<view v-if="loading" class="loading">加载中...</view>
+			<view v-if="!hasMore && recommendList.length" class="no-more">没有更多了</view>
+		</scroll-view>
+	</view>
+</template>
+
+<script>
+const cityList = ['北京', '上海', '广州', '深圳', '杭州', '成都', '重庆', '苏州', '武汉', '西安'];
+const tagList = ['新人', '热舞', '才艺', 'PK', '热门'];
+function mockData(start, count) {
+	const data = [];
+	for (let i = start; i < start + count; i++) {
+		data.push({
+			nickname: `主播${i+1}`,
+			city: cityList[i % cityList.length],
+			viewerCount: Math.floor(Math.random()*10000),
+			level: Math.floor(Math.random()*20)+1,
+			tag: tagList[i % tagList.length],
+			hot: Math.floor(Math.random()*10000)
+		});
+	}
+	return data;
+}
+export default {
+	data() {
+		return {
+			recommendList: [],
+			page: 0,
+			pageSize: 20,
+			total: 100,
+			hasMore: true,
+			loading: false
+		}
+	},
+	onLoad() {
+		this.getRecommendList();
+	},
+	methods: {
+		getRecommendList() {
+			if (!this.hasMore || this.loading) return;
+			this.loading = true;
+			setTimeout(() => {
+				const start = this.page * this.pageSize;
+				const count = Math.min(this.pageSize, this.total - start);
+				if (count <= 0) {
+					this.hasMore = false;
+					this.loading = false;
+					return;
+				}
+				const newData = mockData(start, count);
+				this.recommendList = this.recommendList.concat(newData);
+				this.page++;
+				this.hasMore = this.recommendList.length < this.total;
+				this.loading = false;
+			}, 500);
+		},
+		loadMore() {
+			this.getRecommendList();
+		},
+		enterRoom(item) {
+			console.log('进入直播间：', item)
+		}
+	}
+}
+</script>
+
+<style scoped>
+.container {
+	flex: 1;
+	background-color: #f5f5f5;
+	flex-direction: column;
+}
+.header {
+	padding: 30rpx 30rpx 10rpx 30rpx;
+	background-color: #ffffff;
+}
+.title {
+	font-size: 32rpx;
+	font-weight: 500;
+	color: #333;
+}
+.room-list {
+	flex: 1;
+	height: 0;
+	padding: 0 10rpx;
+}
+.grid {
+	flex-direction: row;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	padding-top: 20rpx;
+}
+.card {
+	width: 345rpx;
+	background: #fff;
+	border-radius: 24rpx;
+	margin-bottom: 28rpx;
+	margin-right: 10rpx;
+	margin-left: 10rpx;
+	box-shadow: 0 8rpx 32rpx rgba(0,0,0,0.10);
+	overflow: hidden;
+}
+.card-img-wrap {
+	width: 345rpx;
+	height: 420rpx;
+	position: relative;
+	border-radius: 24rpx;
+	overflow: hidden;
+}
+.card-img {
+	width: 345rpx;
+	height: 420rpx;
+	border-radius: 24rpx;
+	background-color: #f3f3f3;
+}
+.card-info-overlay {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	justify-content: space-between;
+	pointer-events: none;
+}
+.info-top {
+	flex-direction: row;
+	justify-content: flex-start;
+	align-items: flex-start;
+	padding: 16rpx 0 0 16rpx;
+}
+.city-badge {
+	flex-direction: row;
+	align-items: center;
+	background: rgba(0,0,0,0.18);
+	border-radius: 16rpx;
+	padding: 2rpx 14rpx 2rpx 8rpx;
+	margin-right: 8rpx;
+}
+.city-icon {
+	font-size: 22rpx;
+	color: #ff7e00;
+	margin-right: 4rpx;
+}
+.city {
+	font-size: 22rpx;
+	color: #fff;
+}
+.info-bottom {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	background: linear-gradient(180deg,rgba(0,0,0,0.00),rgba(0,0,0,0.55) 90%);
+	padding: 18rpx 16rpx;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+}
+.info-left {
+	flex-direction: row;
+	align-items: center;
+	max-width: 70%;
+}
+.nickname {
+	font-size: 28rpx;
+	color: #fff;
+	font-weight: 500;
+	max-width: 110rpx;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	margin-right: 10rpx;
+}
+.level-badge, .tag-badge {
+	font-size: 20rpx;
+	color: #fff;
+	border-radius: 10rpx;
+	padding: 2rpx 10rpx;
+	margin-right: 8rpx;
+	height: 32rpx;
+	line-height: 32rpx;
+}
+.level-badge {
+	background: linear-gradient(90deg,#ffb199,#ff0844);
+}
+.tag-badge {
+	background: linear-gradient(90deg,#ff6a00,#ee0979);
+	margin-right: 0;
+}
+.info-right {
+	flex-direction: row;
+	align-items: center;
+}
+.hot-icon {
+	font-size: 22rpx;
+	color: #ff7e00;
+	margin-right: 4rpx;
+}
+.hot {
+	font-size: 22rpx;
+	color: #fff;
+	font-weight: 500;
+}
+.loading, .no-more {
+	text-align: center;
+	color: #888;
+	padding: 20rpx 0;
+}
+</style> 

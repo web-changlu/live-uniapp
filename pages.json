@@ -20,6 +20,24 @@
 			}
 		},
 		{
+			"path": "pages/live-view/index",
+			"style": {
+				"navigationBarTitleText": "直播中心"
+			}
+		},
+		{
+			"path": "pages/live-view/search/index",
+			"style": {
+				"navigationBarTitleText": "搜索直播间"
+			}
+		},
+		{
+			"path": "pages/live-view/recommend/index",
+			"style": {
+				"navigationBarTitleText": "推荐直播间"
+			}
+		},
+		{
 			"path": "pages/examples/1v1/index",
 			"style": {
 				"navigationBarTitleText": "1v1音视频"

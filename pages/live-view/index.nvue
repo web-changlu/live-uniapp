@@ -1,0 +1,60 @@
+<template>
+	<view class="container">
+		<view class="content">
+			<view class="button-group">
+				<button class="btn" type="primary" @click="navigateToSearch">
+					<text class="btn-text">搜索直播间</text>
+				</button>
+				<button class="btn" type="primary" @click="navigateToRecommend">
+					<text class="btn-text">推荐直播间</text>
+				</button>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script>
+	export default {
+		methods: {
+			navigateToSearch() {
+				uni.navigateTo({
+					url: '/pages/live-view/search/index'
+				})
+			},
+			navigateToRecommend() {
+				uni.navigateTo({
+					url: '/pages/live-view/recommend/index'
+				})
+			}
+		}
+	}
+</script>
+
+<style>
+	.container {
+		flex: 1;
+		background-color: #f5f5f5;
+	}
+	
+	.content {
+		padding: 30rpx;
+	}
+	
+	.button-group {
+		margin-top: 50rpx;
+	}
+	
+	.btn {
+		margin-bottom: 30rpx;
+		height: 100rpx;
+		border-radius: 50rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	
+	.btn-text {
+		font-size: 32rpx;
+		color: #ffffff;
+	}
+</style> 
