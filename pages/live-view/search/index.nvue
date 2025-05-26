@@ -1,7 +1,12 @@
 <template>
 	<view class="container">
-		<view class="search-box">
-			<input class="search-input" type="text" v-model="searchValue" placeholder="请输入直播房间号" @confirm="watchLive"/>
+		<view class="input-section">
+			<view class="input-box">
+				<input class="app-input" type="text" v-model="searchValue" placeholder="请输入直播房间号" @confirm="watchLive"/>
+			</view>
+			<view class="input-box">
+				<input class="app-input" type="text" v-model="remoteUserIdValue" placeholder="请输入远程用户ID" @confirm="watchLive"/>
+			</view>
 		</view>
 		
 		<!-- 观看直播按钮 -->
@@ -16,17 +21,22 @@
 		data() {
 			return {
 				searchValue: '',
+				remoteUserIdValue: ''
 			}
 		},
 		methods: {
 			clear() {
 				this.searchValue = ''
+				this.remoteUserIdValue = ''
 			},
 			watchLive() {
-				// 跳转到直播详情页，并将房间号传递过去
 				if (this.searchValue) {
+					let url = `/pages/live/detail/index?roomId=${this.searchValue}`;
+					if (this.remoteUserIdValue) {
+						url += `&remoteUserId=${this.remoteUserIdValue}`;
+					}
 					uni.navigateTo({
-						url: `/pages/live/detail/index?roomId=${this.searchValue}`
+						url: url
 					});
 				} else {
 					uni.showToast({
@@ -49,41 +59,43 @@
 		flex: 1;
 		background-color: #f5f5f5;
 	}
-	
-	.search-box {
+
+	.input-section {
 		padding: 20rpx;
 		background-color: #ffffff;
-		/* 根据 uni-search-bar 样式进行调整 */
-		flex-direction: row;
-		align-items: center;
 	}
 
-	.search-input {
+	.input-box {
+		margin-bottom: 20rpx;
+	}
+
+	.input-box:last-child {
+		margin-bottom: 0;
+	}
+
+	.app-input {
 		flex: 1;
-		height: 70rpx; /* 调整高度 */
-		line-height: 70rpx; /* 调整行高 */
-		padding: 0 20rpx; /* 调整内边距 */
-		background-color: #f5f5f5; /* 调整背景色 */
-		border-radius: 35rpx; /* 半高圆角 */
-		font-size: 28rpx; /* 调整字体大小 */
-		margin-right: 20rpx; /* 调整右侧间距 */
+		height: 70rpx;
+		line-height: 70rpx;
+		padding: 0 20rpx;
+		background-color: #f5f5f5;
+		border-radius: 35rpx;
+		font-size: 28rpx;
 	}
 	
 	.watch-button-container {
 		margin-top: 40rpx;
-		padding: 0 20rpx; /* 提供左右间距 */
+		padding: 0 20rpx;
 	}
 
 	.watch-button {
-		width: 100%; /* 占满父容器宽度 */
-		height: 100rpx; /* 调整高度 */
-		line-height: 100rpx; /* 调整行高 */
-		background-color: #007aff; /* 模拟 primary 颜色 */
-		/* color: #ffffff; */ /* 文字颜色由内部 text 控制 */
-		border-radius: 50rpx; /* 半高圆角 */
-		text-align: center; /* 居中文本 */
-		/* font-size: 32rpx; */ /* 字体大小由内部 text 控制 */
-		margin-bottom: 30rpx; /* 添加底部间距，模拟 index 页面按钮组效果 */
+		width: 100%;
+		height: 100rpx;
+		line-height: 100rpx;
+		background-color: #007aff;
+		border-radius: 50rpx;
+		text-align: center;
+		margin-bottom: 30rpx;
 	}
 
 	.button-text {
