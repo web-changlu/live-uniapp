@@ -2,6 +2,7 @@
 import { defineStore } from 'pinia'
 import { useTrtcStore } from '@/store/modules/trtc';
 import { useUserStore } from '@/store/modules/user';
+import { TRTCAppScene, TRTCRoleType, TRTCVideoStreamType } from '@/TrtcCloud/lib/TrtcDefines';
 
 export const useLiveStore = defineStore('live', {
   state: () => ({
@@ -188,7 +189,18 @@ export const useLiveStore = defineStore('live', {
         this.error = null
         
         // 这里可以添加实际的加入直播间逻辑，如连接TRTC等
-        
+        const trtcStore = useTrtcStore();
+        // 初始化TRTC
+		    trtcStore.initTrtc();
+        // 加入TRTC房间
+        trtcStore.joinRoom({
+          roomId: liveId,
+          userId: userStore.userId,
+          userSig: userStore.userInfo.userSig,
+          sdkAppId: userStore.userInfo.sdkAppId,
+          role: 'audience' // 作为观众加入
+        });
+
         // 添加观众到列表
         this.viewers.push({
           id: userData.userId,
@@ -219,10 +231,7 @@ export const useLiveStore = defineStore('live', {
       try {
         this.loading = true
         this.error = null
-        
-        // 这里可以添加实际的离开直播间逻辑，如断开TRTC连接等
-        const trtcStore = useTrtcStore();
-        trtcStore.leaveRoom(this.anchor.id);
+        trtcStore.leaveRoom(userId);
         // 从观众列表中移除
         const index = this.viewers.findIndex(viewer => viewer.id === userId)
         if (index !== -1) {

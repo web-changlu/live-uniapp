@@ -18,7 +18,7 @@
 				<!-- TRTC的远程视频预览组件 -->
 				<trtc-remote-view v-if="hasRemoteStream" 
 				style="height: 400rpx;"
-				class="video-view" :viewId="remoteViewId" :userId="liveStore.anchor.id"></trtc-remote-view>
+				class="video-view" :viewId="remoteViewId" :userId="remoteUserId"></trtc-remote-view>
 				<view v-else class="placeholder-video">
 					<text class="placeholder-text">等待主播开播...</text>
 				</view>
@@ -110,6 +110,7 @@ const trtcStore = useTrtcStore();
 
 // 页面参数
 const roomId = ref('');
+const remoteUserId = ref('');
 const messageContent = ref('');
 const lastMessageId = ref('');
 
@@ -260,15 +261,8 @@ const endLive = () => {
 				});
 
 				try {
-					// 停止本地预览
-					trtcStore.stopLocalPreview();
-
 					// 结束直播
 					liveStore.endLive();
-
-					// 离开TRTC房间
-					trtcStore.leaveRoom();
-
 					// 销毁TRTC
 					trtcStore.destroyTrtc();
 
@@ -354,6 +348,12 @@ const initLocalPreview = () => {
 	}
 };
 
+// 初始化远程流预览（观众）
+const initRemoteStreamPreview = (userId) => {
+	console.log('initRemoteStreamPreview', userId, roomId.value);
+	const remoteViewRes =  trtcStore.startRemoteStreamPreview(userId, remoteViewId.value);
+}
+
 // 加入房间
 const joinRoom = () => {
 	if (!roomId.value) return;
@@ -364,8 +364,7 @@ const joinRoom = () => {
 	});
 
 	try {
-		// 初始化TRTC
-		trtcStore.initTrtc();
+		
 
 		// 加入直播间
 		liveStore.joinLiveRoom(roomId.value, {
@@ -373,16 +372,9 @@ const joinRoom = () => {
 			userName: userStore.userName,
 			userAvatar: userStore.userAvatar
 		});
-
-		// 加入TRTC房间
-		trtcStore.joinRoom({
-			roomId: roomId.value,
-			userId: userStore.userId,
-			userSig: userStore.userInfo.userSig,
-			sdkAppId: userStore.userInfo.sdkAppId,
-			role: 'audience' // 作为观众加入
-		});
-
+		if(remoteUserId.value) {
+			initRemoteStreamPreview(remoteUserId.value);
+		}
 		// 隐藏加载中
 		uni.hideLoading();
 	} catch (error) {
@@ -411,6 +403,9 @@ onLoad((option) => {
 	console.log('option', JSON.stringify(option) );
 	if (option && option.roomId) {
 		roomId.value = option.roomId;
+	}
+	if(option && option.remoteUserId) {
+		remoteUserId.value = option.remoteUserId;
 	}
 	if (roomId.value) {
 		// 如果是主播，初始化本地预览

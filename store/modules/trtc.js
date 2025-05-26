@@ -251,7 +251,7 @@ export const useTrtcStore = defineStore('trtc', {
         if (this.trtcCloud && this.connectionState === 'connected') {
           // 使用TRTC API离开房间
           if (remoteUserId) {
-            this.trtcCloud.stopRemoteView(remoteUserId)
+            this.trtcCloud.stopRemoteStreamPreview(remoteUserId)
           }
           this.trtcCloud.exitRoom()
         }
@@ -443,7 +443,39 @@ export const useTrtcStore = defineStore('trtc', {
         this.loading = false
       }
     },
-
+    startRemoteStreamPreview(userId, viewId) {
+      try {
+        this.loading = true
+        this.error = null
+        if (!this.trtcCloud) {
+          this.initTrtc()
+        }
+        this.trtcCloud.startRemoteView(userId, TRTCVideoStreamType.TRTCVideoStreamTypeBig, viewId)
+        // this.trtcCloud.startRemoteAudio(userId) 没找到对应api
+        this.addRemoteStream({userId})
+        return {
+          success: true
+        }
+      } catch (error) {
+        this.error = error.message || '开启远程预览失败'
+        return {
+          success: false,
+          error: this.error
+        }
+      }
+    },
+    stopRemoteStreamPreview(userId) {
+      try {
+        this.loading = true
+        this.error = null
+        if (!this.trtcCloud) {
+          this.initTrtc()
+        }
+        this.trtcCloud.stopRemoteView(userId, TRTCVideoStreamType.TRTCVideoStreamTypeBig)
+        // this.trtcCloud.stopRemoteAudio(userId)
+        this.removeRemoteStream(userId)
+      }
+    },
     // 添加远程流
     addRemoteStream(stream) {
       this.remoteStreams.push(stream)
