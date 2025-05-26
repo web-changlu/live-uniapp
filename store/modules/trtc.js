@@ -474,6 +474,12 @@ export const useTrtcStore = defineStore('trtc', {
         this.trtcCloud.stopRemoteView(userId, TRTCVideoStreamType.TRTCVideoStreamTypeBig)
         // this.trtcCloud.stopRemoteAudio(userId)
         this.removeRemoteStream(userId)
+      } catch (error) {
+        this.error = error.message || '停止远程预览失败'
+        return {
+          success: false,
+          error: this.error
+        }
       }
     },
     // 添加远程流
