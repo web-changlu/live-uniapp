@@ -453,6 +453,7 @@ export const useTrtcStore = defineStore('trtc', {
         this.trtcCloud.startRemoteView(userId, TRTCVideoStreamType.TRTCVideoStreamTypeBig, viewId)
         // this.trtcCloud.startRemoteAudio(userId) 没找到对应api
         this.addRemoteStream({userId})
+        console.log('----------开启远程预览成功---------------')
         return {
           success: true
         }

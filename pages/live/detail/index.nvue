@@ -351,6 +351,7 @@ const initLocalPreview = () => {
 
 // 初始化远程流预览（观众）
 const initRemoteStreamPreview = (userId) => {
+	console.log('初始化远程流预览（观众）------>initRemoteStreamPreview', userId, remoteViewId.value);
 	console.log('initRemoteStreamPreview', userId, roomId.value);
 	const remoteViewRes =  trtcStore.startRemoteStreamPreview(userId, remoteViewId.value);
 }
