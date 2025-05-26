@@ -16,6 +16,9 @@ export const useTrtcStore = defineStore('trtc', {
       screenShareEnabled: false,
       videoView: null, // 本地视频视图
     },
+    currentDevices: {
+      isFrontCamera: true,
+    },
     // 远程流列表
     remoteStreams: [],
     // 连接状态
@@ -171,7 +174,8 @@ export const useTrtcStore = defineStore('trtc', {
           this.trtcCloud.stopLocalPreview()
 
           // 清除视图ID
-          this.localStream.videoView = null
+          this.localStream.videoView = null;
+          this.localStream.videoEnabled = false;
         }
 
         return {

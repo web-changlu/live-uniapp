@@ -129,13 +129,18 @@ const hasRemoteStream = computed(() => {
 });
 
 // 视频控制方法
-const toggleVideo =  () => {
+const toggleVideo = () => {
 	const enabled = !trtcStore.localStream.videoEnabled;
-	 trtcStore.toggleLocalVideo(enabled);
+	console.log('toggleVideo', enabled)
+	console.log('videoView', trtcStore.localStream.videoView)
+	trtcStore.toggleLocalVideo(enabled);
 
 	if (enabled && !trtcStore.localStream.videoView) {
 		// 如果开启视频且没有视图，则启动本地预览
-		 trtcStore.startLocalPreview(localViewId);
+		trtcStore.startLocalPreview(localViewId);
+	} else if (!enabled) {
+		// 如果关闭视频，则停止本地预览
+		trtcStore.stopLocalPreview();
 	}
 };
 
