@@ -288,9 +288,9 @@ export const useTrtcStore = defineStore('trtc', {
         if (!this.trtcCloud) {
           this.initTrtc()
         }
-
+        
         // 使用TRTC API开启/关闭本地视频
-        this.trtcCloud.muteLocalVideo(!enabled)
+        this.trtcCloud.muteLocalVideo(TRTCVideoStreamType.TRTCVideoStreamTypeBig, !enabled)
 
         // 更新本地流状态
         this.localStream.videoEnabled = enabled

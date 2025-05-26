@@ -15,8 +15,7 @@
 		{
 			"path": "pages/live/detail/index",
 			"style": {
-				"navigationBarTitleText": "直播间",
-				"navigationStyle": "custom"
+				"navigationBarTitleText": "直播间"
 			}
 		},
 		{
