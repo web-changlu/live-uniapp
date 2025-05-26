@@ -129,23 +129,23 @@ const hasRemoteStream = computed(() => {
 });
 
 // 视频控制方法
-const toggleVideo = async () => {
+const toggleVideo =  () => {
 	const enabled = !trtcStore.localStream.videoEnabled;
-	await trtcStore.toggleLocalVideo(enabled);
+	 trtcStore.toggleLocalVideo(enabled);
 
 	if (enabled && !trtcStore.localStream.videoView) {
 		// 如果开启视频且没有视图，则启动本地预览
-		await trtcStore.startLocalPreview(localViewId);
+		 trtcStore.startLocalPreview(localViewId);
 	}
 };
 
-const toggleAudio = async () => {
-	await trtcStore.toggleLocalAudio(!trtcStore.localStream.audioEnabled);
+const toggleAudio =  () => {
+	 trtcStore.toggleLocalAudio(!trtcStore.localStream.audioEnabled);
 };
 
-const switchCamera = async () => {
+const switchCamera = () => {
 	// 直接调用trtcStore的switchCamera方法
-	await trtcStore.switchCamera();
+	trtcStore.switchCamera();
 
 	// 显示切换提示
 	uni.showToast({
@@ -243,7 +243,7 @@ const handleGift = () => {
 };
 
 // 结束直播（主播）
-const endLive = async () => {
+const endLive = () => {
 	uni.showModal({
 		title: '结束直播',
 		content: '确定要结束当前直播吗？',
@@ -256,16 +256,16 @@ const endLive = async () => {
 
 				try {
 					// 停止本地预览
-					await trtcStore.stopLocalPreview();
+					trtcStore.stopLocalPreview();
 
 					// 结束直播
-					await liveStore.endLive();
+					liveStore.endLive();
 
 					// 离开TRTC房间
-					await trtcStore.leaveRoom();
+					trtcStore.leaveRoom();
 
 					// 销毁TRTC
-					await trtcStore.destroyTrtc();
+					trtcStore.destroyTrtc();
 
 					// 隐藏加载中
 					uni.hideLoading();
@@ -288,7 +288,7 @@ const endLive = async () => {
 };
 
 // 离开房间（观众）
-const leaveRoom = async () => {
+const leaveRoom = () => {
 	// 显示加载中
 	uni.showLoading({
 		title: '离开房间中...'
@@ -296,13 +296,13 @@ const leaveRoom = async () => {
 
 	try {
 		// 离开直播间
-		await liveStore.leaveLiveRoom(userStore.userId);
+		liveStore.leaveLiveRoom(userStore.userId);
 
 		// 离开TRTC房间
-		await trtcStore.leaveRoom();
+		trtcStore.leaveRoom();
 
 		// 销毁TRTC
-		await trtcStore.destroyTrtc();
+		trtcStore.destroyTrtc();
 
 		// 隐藏加载中
 		uni.hideLoading();
@@ -322,12 +322,12 @@ const leaveRoom = async () => {
 };
 
 // 初始化本地预览（主播）
-const initLocalPreview = async () => {
+const initLocalPreview = () => {
 	if (isAnchor.value) {
 		try {
 			console.log('开始初始化本地预览');
 			// 启动本地预览
-			const localViewRes =  await trtcStore.startLocalPreview(localViewId);
+			const localViewRes =  trtcStore.startLocalPreview(localViewId);
 			console.log('localViewRes', JSON.stringify(localViewRes) );
 			if(localViewRes.success) {
 				uni.showToast({
@@ -350,7 +350,7 @@ const initLocalPreview = async () => {
 };
 
 // 加入房间
-const joinRoom = async () => {
+const joinRoom = () => {
 	if (!roomId.value) return;
 
 	// 显示加载中
@@ -360,17 +360,17 @@ const joinRoom = async () => {
 
 	try {
 		// 初始化TRTC
-		await trtcStore.initTrtc();
+		trtcStore.initTrtc();
 
 		// 加入直播间
-		await liveStore.joinLiveRoom(roomId.value, {
+		liveStore.joinLiveRoom(roomId.value, {
 			userId: userStore.userId,
 			userName: userStore.userName,
 			userAvatar: userStore.userAvatar
 		});
 
 		// 加入TRTC房间
-		await trtcStore.joinRoom({
+		trtcStore.joinRoom({
 			roomId: roomId.value,
 			userId: userStore.userId,
 			userSig: userStore.userInfo.userSig,
@@ -400,7 +400,7 @@ const checkPermission = () => {
 		permision.requestAndroidPermission('android.permission.CAMERA');
 	}
 }
-onLoad(async (option) => {
+onLoad((option) => {
 	console.log('onLoad触发----->', JSON.stringify(option) );
 	checkPermission()
 	console.log('option', JSON.stringify(option) );
@@ -411,12 +411,12 @@ onLoad(async (option) => {
 		// 如果是主播，初始化本地预览
 		if (userStore.userId === liveStore.anchor.id) {
 			console.log(roomId.value,'开始直播');
-			await liveStore.startLive()
+			liveStore.startLive()
 			initLocalPreview();
 			
 		} else {
 			// 如果是观众，加入房间
-			await joinRoom();
+			joinRoom();
 		}
 	} else {
 		uni.showToast({
@@ -427,7 +427,7 @@ onLoad(async (option) => {
 	}
 })
 
-onMounted(async () => {
+onMounted(() => {
 	console.log('onMounted触发-----' );
 });
 

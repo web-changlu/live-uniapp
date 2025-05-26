@@ -109,7 +109,7 @@ export const useLiveStore = defineStore('live', {
         }
     },
     // 开始直播
-    async startLive() {
+    startLive() {
       try {
         this.loading = true
         this.error = null
@@ -118,8 +118,8 @@ export const useLiveStore = defineStore('live', {
         const trtcStore = useTrtcStore();
         const userStore = useUserStore();
         // 初始化TRTC
-		    await trtcStore.initTrtc();
-        const joinResult = await trtcStore.joinRoom({
+		    trtcStore.initTrtc();
+        const joinResult = trtcStore.joinRoom({
           roomId: this.liveInfo.id,
           userId: this.anchor.id,
           userSig: userStore.userInfo.userSig,
@@ -154,7 +154,7 @@ export const useLiveStore = defineStore('live', {
     },
     
     // 结束直播
-    async endLive() {
+    endLive() {
       try {
         this.loading = true
         this.error = null
@@ -182,7 +182,7 @@ export const useLiveStore = defineStore('live', {
     },
     
     // 加入直播间（观众）
-    async joinLiveRoom(liveId, userData) {
+    joinLiveRoom(liveId, userData) {
       try {
         this.loading = true
         this.error = null
@@ -215,7 +215,7 @@ export const useLiveStore = defineStore('live', {
     },
     
     // 离开直播间（观众）
-    async leaveLiveRoom(userId) {
+    leaveLiveRoom(userId) {
       try {
         this.loading = true
         this.error = null

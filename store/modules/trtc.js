@@ -50,7 +50,7 @@ export const useTrtcStore = defineStore('trtc', {
 
   actions: {
     // 初始化TRTC
-    async initTrtc() {
+    initTrtc() {
       try {
         this.loading = true
         this.error = null
@@ -130,13 +130,13 @@ export const useTrtcStore = defineStore('trtc', {
       });
     },
     // 创建本地预览
-    async startLocalPreview(viewId) {
+    startLocalPreview(viewId) {
       try {
         this.loading = true
         this.error = null
 
         if (!this.trtcCloud) {
-          await this.initTrtc()
+          this.initTrtc()
         }
 
         // 开启本地预览
@@ -161,7 +161,7 @@ export const useTrtcStore = defineStore('trtc', {
     },
 
     // 停止本地预览
-    async stopLocalPreview() {
+    stopLocalPreview() {
       try {
         this.loading = true
         this.error = null
@@ -189,7 +189,7 @@ export const useTrtcStore = defineStore('trtc', {
     },
 
     // 加入房间
-    async joinRoom(options) {
+    joinRoom(options) {
       try {
         this.loading = true
         this.error = null
@@ -201,7 +201,7 @@ export const useTrtcStore = defineStore('trtc', {
         this.roomId = roomId
 
         if (!this.trtcCloud) {
-          await this.initTrtc()
+          this.initTrtc()
         }
 
         // 构建进房参数
@@ -239,7 +239,7 @@ export const useTrtcStore = defineStore('trtc', {
     },
 
     // 离开房间
-    async leaveRoom(remoteUserId) {
+    leaveRoom(remoteUserId) {
       try {
         this.loading = true
         this.error = null
@@ -276,13 +276,13 @@ export const useTrtcStore = defineStore('trtc', {
     },
 
     // 开启/关闭本地视频
-    async toggleLocalVideo(enabled) {
+    toggleLocalVideo(enabled) {
       try {
         this.loading = true
         this.error = null
 
         if (!this.trtcCloud) {
-          await this.initTrtc()
+          this.initTrtc()
         }
 
         // 使用TRTC API开启/关闭本地视频
@@ -305,13 +305,13 @@ export const useTrtcStore = defineStore('trtc', {
     },
 
     // 开启/关闭本地音频
-    async toggleLocalAudio(enabled) {
+    toggleLocalAudio(enabled) {
       try {
         this.loading = true
         this.error = null
 
         if (!this.trtcCloud) {
-          await this.initTrtc()
+          this.initTrtc()
         }
 
         // 使用TRTC API开启/关闭本地音频
@@ -356,13 +356,13 @@ export const useTrtcStore = defineStore('trtc', {
       }
     },
     // 切换摄像头
-    async switchCamera() {
+    switchCamera() {
       try {
         this.loading = true
         this.error = null
 
         if (!this.trtcCloud) {
-          await this.initTrtc()
+          this.initTrtc()
         }
 
         // 使用TRTC提供的switchCamera方法切换摄像头
@@ -459,14 +459,14 @@ export const useTrtcStore = defineStore('trtc', {
     },
 
     // 销毁TRTC
-    async destroyTrtc() {
+    destroyTrtc() {
       try {
         this.loading = true
         this.error = null
 
         // 如果已连接，先离开房间
         if (this.connectionState === 'connected') {
-          await this.leaveRoom()
+          this.leaveRoom()
         }
 
         // 这里可以添加实际的销毁TRTC逻辑
