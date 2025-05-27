@@ -90,7 +90,7 @@ export const useLiveStore = defineStore('live', {
     },
     setLiveData(liveData) {
       //TODO 房间号从后端获取
-      const liveId = liveData.userId + Date.now()
+      const liveId = Date.now()
         // 设置直播信息
         this.setLiveInfo({
           title: liveData.title,
