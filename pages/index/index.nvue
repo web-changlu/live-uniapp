@@ -13,6 +13,16 @@
 
 <script>
 	export default {
+		created(){
+			plus.device.getInfo({
+				success: (res) => {
+					console.log('设备ID:', res.uuid); // Android/iOS 设备唯一标识 appID
+				},
+				fail: (err) => {
+					console.error('获取失败:', err);
+				}
+			});
+		},
 		data() {
 			return {
 				list: [
