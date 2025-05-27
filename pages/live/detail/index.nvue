@@ -369,11 +369,19 @@ const joinRoom = () => {
 		
 
 		// 加入直播间
-		liveStore.joinLiveRoom(roomId.value, {
+		const joinRes =  liveStore.joinLiveRoom(roomId.value, {
 			userId: userStore.userId,
 			userName: userStore.userName,
 			userAvatar: userStore.userAvatar
 		});
+		if(!joinRes.success) {
+			console.warn('观众加入房间失败', joinRes.error);
+			uni.showToast({
+				title: joinRes.error || '加入房间失败',
+				icon: 'none'
+			});
+			return;
+		}
 		if(remoteUserId.value) {
 			initRemoteStreamPreview(remoteUserId.value);
 		}
@@ -413,7 +421,14 @@ onLoad((option) => {
 		// 如果是主播，初始化本地预览
 		if (userStore.userId === liveStore.anchor.id) {
 			console.log(roomId.value,'开始直播');
-			liveStore.startLive()
+			const liveRes =  liveStore.startLive()
+			if(!liveRes.success) {
+				console.warn('开始直播失败', liveRes.error);
+				uni.showToast({
+					title: liveRes.error || '开始直播失败',
+					icon: 'none'
+				}); 
+			}
 			initLocalPreview();
 			
 		} else {
