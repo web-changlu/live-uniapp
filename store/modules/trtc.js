@@ -70,6 +70,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || 'TRTC初始化失败'
+        console.error('error:',this.error);
         return {
           success: false,
           error: this.error
@@ -154,6 +155,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '开启本地预览失败'
+        console.error('error:',this.error);
         return {
           success: false,
           error: this.error
@@ -161,6 +163,10 @@ export const useTrtcStore = defineStore('trtc', {
       } finally {
         this.loading = false
       }
+    },
+    
+    stopLocalAudio() {
+      this.trtcCloud.stopLocalAudio();
     },
 
     // 停止本地预览
@@ -183,6 +189,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '停止本地预览失败'
+        console.error('error:',this.error);
         return {
           success: false,
           error: this.error
@@ -232,6 +239,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '加入房间失败'
+        console.error('error:',this.error);
         this.connectionState = 'disconnected'
         return {
           success: false,
@@ -270,6 +278,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '离开房间失败'
+        console.error('error:',this.error);
         return {
           success: false,
           error: this.error
@@ -299,6 +308,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '操作本地视频失败'
+        console.error('error:',this.error);
         return {
           success: false,
           error: this.error
@@ -327,6 +337,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '操作本地音频失败'
+        console.error('error:',this.error);
         return {
           success: false,
           error: this.error
@@ -351,6 +362,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '操作屏幕共享失败'
+        console.error('error:',this.error);
         return {
           success: false,
           error: this.error
@@ -383,6 +395,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '切换摄像头失败'
+        console.error('error:',this.error);
         return {
           success: false,
           error: this.error
@@ -409,6 +422,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '切换麦克风失败'
+        console.error('error:',this.error);
         return {
           success: false,
           error: this.error
@@ -435,6 +449,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '切换扬声器失败'
+        console.error('error:',this.error);
         return {
           success: false,
           error: this.error
@@ -459,6 +474,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '开启远程预览失败'
+        console.error('error:',this.error);
         return {
           success: false,
           error: this.error
@@ -477,6 +493,7 @@ export const useTrtcStore = defineStore('trtc', {
         this.removeRemoteStream(userId)
       } catch (error) {
         this.error = error.message || '停止远程预览失败'
+        console.error('error:',this.error);
         return {
           success: false,
           error: this.error
@@ -513,7 +530,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
 
         // 这里可以添加实际的销毁TRTC逻辑
-        this.trtcCloud.destroyInstance()
+        TrtcCloud.destroyInstance()
         // 重置状态
         this.trtcCloud = null
         this.roomId = ''
@@ -538,6 +555,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '销毁TRTC失败'
+        console.error('error:',this.error);
         return {
           success: false,
           error: this.error

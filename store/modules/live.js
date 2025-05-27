@@ -141,8 +141,9 @@ export const useLiveStore = defineStore('live', {
         }
       } catch (error) {
         this.error = error.message || '开始直播失败'
+        console.error('error:',this.error);
         // 重置直播状态
-		    tshi.resetLiveState();
+		    this.resetLiveState();
         // 返回上一页
 		    uni.navigateBack();
         return {
@@ -173,6 +174,7 @@ export const useLiveStore = defineStore('live', {
         }
       } catch (error) {
         this.error = error.message || '结束直播失败'
+        console.error('error:',this.error);
         return {
           success: false,
           error: this.error
@@ -218,6 +220,7 @@ export const useLiveStore = defineStore('live', {
         }
       } catch (error) {
         this.error = error.message || '加入直播间失败'
+        console.error('error:',this.error);
         return {
           success: false,
           error: this.error
@@ -247,6 +250,7 @@ export const useLiveStore = defineStore('live', {
         }
       } catch (error) {
         this.error = error.message || '离开直播间失败'
+        console.error('error:',this.error);
         return {
           success: false,
           error: this.error

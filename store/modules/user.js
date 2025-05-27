@@ -88,6 +88,7 @@ export const useUserStore = defineStore('user', {
         }
       } catch (error) {
         this.error = error.message || '登录失败'
+        console.error('error:',this.error);
         return {
           success: false,
           error: this.error
@@ -127,6 +128,7 @@ export const useUserStore = defineStore('user', {
         }
       } catch (error) {
         this.error = error.message || '登出失败'
+        console.error('error:',this.error);
         return {
           success: false,
           error: this.error
@@ -150,6 +152,7 @@ export const useUserStore = defineStore('user', {
         }
       } catch (error) {
         this.error = error.message || '更新用户信息失败'
+        console.error('error:',this.error);
         return {
           success: false,
           error: this.error
@@ -173,6 +176,7 @@ export const useUserStore = defineStore('user', {
         }
       } catch (error) {
         this.error = error.message || '更新用户权限失败'
+        console.error('error:',this.error);
         return {
           success: false,
           error: this.error
