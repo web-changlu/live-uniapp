@@ -190,6 +190,7 @@ export const useLiveStore = defineStore('live', {
         
         // 这里可以添加实际的加入直播间逻辑，如连接TRTC等
         const trtcStore = useTrtcStore();
+        const userStore = useUserStore();
         // 初始化TRTC
 		    trtcStore.initTrtc();
         // 加入TRTC房间
