@@ -104,7 +104,7 @@ const startLive = async () => {
 		});
 
 		// 跳转到直播详情页
-		uni.navigateTo({
+		uni.redirectTo({
 			url: `/pages/live/detail/index?roomId=${roomId}`
 		});
 	} catch (error) {
