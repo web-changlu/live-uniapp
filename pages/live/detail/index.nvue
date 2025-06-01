@@ -461,14 +461,11 @@ const destoryHandle = () => {
 		liveStore.leaveLiveRoom(userStore.userId);
 	}
 
-	// 离开TRTC房间
-	trtcStore.leaveRoom();
-
 	// 销毁TRTC 销毁再次进有问题
 	trtcStore.destroyTrtc();
 }
 onUnmounted(() => {
-	destoryHandle();
+	trtcStore.handleUninstallEvents()
 });
 onUnload(() => {
 	destoryHandle();

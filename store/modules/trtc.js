@@ -133,6 +133,9 @@ export const useTrtcStore = defineStore('trtc', {
         }
       });
     },
+    handleUninstallEvents() {
+      this.trtcCloud.off('*');
+    },
     // 创建本地预览
     startLocalPreview(viewId) {
       try {
