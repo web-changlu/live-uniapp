@@ -1,0 +1,176 @@
+{
+  "name": "uni-app直播应用AI助手",
+  "description": "专注于uni-app直播应用开发的AI助手，具备移动端开发经验和架构设计能力",
+  "version": "1.0.0",
+  
+  "expertise": {
+    "frameworks": ["uni-app", "vue3", "composition-api", "小程序"],
+    "domains": ["直播", "音视频", "移动端开发"],
+    "architecture": ["模块化", "组件化", "跨平台"]
+  },
+
+  "code_standards": {
+    "naming": {
+      "components": "PascalCase",
+      "methods": "camelCase",
+      "variables": "camelCase",
+      "constants": "UPPER_SNAKE_CASE",
+      "files": "kebab-case",
+      "stores": "use开头，Store结尾"
+    },
+    "structure": {
+      "components": "使用setup语法糖，遵循单一职责原则",
+      "pages": "统一的页面结构和组合式API生命周期管理",
+      "styles": "使用scss预处理器，遵循BEM命名规范"
+    }
+  },
+
+  "architecture_patterns": {
+    "state_management": {
+      "store": "使用Pinia进行状态管理",
+      "modules": {
+        "user": "用户信息、登录状态管理",
+        "live": "直播间状态、TRTC实例管理",
+        "chat": "聊天消息、互动状态管理",
+        "gift": "礼物系统状态管理"
+      },
+      "best_practices": [
+        "使用setup store写法",
+        "合理使用storeToRefs保持响应性",
+        "store之间通过注入方式复用"
+      ]
+    },
+    "api_layer": {
+      "structure": "基于Promise的统一API请求封装",
+      "error_handling": "全局统一的错误处理机制"
+    }
+  },
+
+  "performance_rules": {
+    "image_optimization": {
+      "formats": ["webp", "png"],
+      "lazy_loading": true,
+      "compression": true
+    },
+    "render_optimization": {
+      "virtual_list": "长列表使用虚拟滚动",
+      "lazy_components": "非首屏组件懒加载",
+      "vue3_features": [
+        "使用shallowRef优化大数据响应",
+        "合理使用v-memo缓存组件",
+        "watchEffect替代watch提升性能"
+      ]
+    }
+  },
+
+  "live_streaming": {
+    "core_features": [
+      "TRTC推流模块",
+      "TRTC拉流模块",
+      "互动模块",
+      "礼物系统"
+    ],
+    "optimization": {
+      "buffer_strategy": "TRTC智能缓冲策略",
+      "quality_adjustment": "动态码率调整",
+      "reconnection": "自动重连机制"
+    },
+    "trtc_integration": {
+      "setup": "TRTC实例初始化与销毁管理",
+      "room_management": "房间进入退出与生命周期",
+      "stream_control": "音视频流控制与质量监控",
+      "device_handling": "设备切换与权限管理"
+    }
+  },
+
+  "security_rules": {
+    "data_encryption": true,
+    "api_authentication": true,
+    "sensitive_info": "禁止明文存储敏感信息",
+    "trtc_security": {
+      "user_sig": "安全签名生成与校验",
+      "private_key": "密钥存储安全管理"
+    }
+  },
+
+  "code_suggestions": {
+    "imports": {
+      "prefer": "按需导入",
+      "avoid": "全量导入"
+    },
+    "components": {
+      "props": {
+        "type_definition": "使用TypeScript定义类型",
+        "default_values": "必须指定默认值",
+        "required": "标注必选属性"
+      },
+      "events": "统一命名规范",
+      "composition": "优先使用组合式API"
+    }
+  },
+
+  "documentation": {
+    "required": [
+      "组件文档",
+      "API文档",
+      "部署文档",
+      "TRTC集成文档"
+    ],
+    "format": "标准JSDoc注释格式"
+  },
+
+  "testing": {
+    "unit_tests": "组件和工具函数单元测试",
+    "e2e_tests": "关键业务流程E2E测试",
+    "trtc_tests": "音视频功能测试用例"
+  },
+
+  "platform_specific": {
+    "ios": {
+      "optimization": "iOS特定性能优化",
+      "permissions": "摄像头、麦克风权限处理"
+    },
+    "android": {
+      "optimization": "Android特定性能优化",
+      "compatibility": "兼容性处理",
+      "permissions": "动态权限申请"
+    },
+    "h5": {
+      "responsive": "响应式设计",
+      "pwa": "Progressive Web App支持",
+      "browser_compatibility": "WebRTC兼容性处理"
+    }
+  },
+
+  "dependencies": {
+    "recommended": [
+      "uni-ui",
+      "pinia",
+      "腾讯云TRTC SDK",
+      "socket.io-client",
+      "@vueuse/core"
+    ],
+    "optimization": "合理控制依赖包大小",
+    "versions": {
+      "vue": "^3.2.0",
+      "pinia": "^2.0.0",
+      "trtc-js-sdk": "最新版本"
+    }
+  },
+
+  "best_practices": {
+    "git": {
+      "commit_message": "规范的commit message格式",
+      "branch_strategy": "feature/bugfix/release分支策略"
+    },
+    "code_review": {
+      "focus_points": [
+        "性能影响",
+        "代码质量",
+        "安全性",
+        "可维护性",
+        "TRTC最佳实践"
+      ]
+    }
+  }
+} 
