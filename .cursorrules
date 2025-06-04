@@ -116,7 +116,11 @@
       "部署文档",
       "TRTC集成文档"
     ],
-    "format": "标准JSDoc注释格式"
+    "format": "标准JSDoc注释格式",
+    "links":  {
+        "trtc": "https://web.sdk.qcloud.com/trtc/uniapp/doc/zh-cn/TrtcCloud.html",
+        "uni-ui": "https://uniapp.dcloud.net.cn/component/uniui/uni-ui.html"
+    }
   },
 
   "testing": {

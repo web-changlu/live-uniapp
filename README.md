@@ -1,3 +1,35 @@
+## 项目概述
+本项目是基于uni-app框架开发的跨平台直播应用，集成了腾讯云TRTC音视频SDK，提供了完整的直播功能，包括直播推流、拉流、互动、礼物系统等核心功能。项目采用Vue3和Composition API开发，支持iOS、Android和H5多平台部署。
+```
+live-uniapp/
+├── TrtcCloud/             # TRTC SDK相关封装
+│   ├── lib/               # SDK库文件
+│   ├── permission.js      # 权限管理
+│   └── view/              # TRTC视图组件
+├── common/                # 公共工具和样式
+├── components/            # 通用组件
+│   ├── trtc/              # TRTC相关组件
+│   └── uni-*/             # uni-ui组件
+├── debug/                 # 调试工具
+├── pages/                 # 页面文件
+│   ├── examples/          # 示例页面
+│   ├── index/             # 首页
+│   ├── live/              # 直播页面
+│   └── live-view/         # 直播观看页面
+├── static/                # 静态资源
+├── store/                 # 状态管理
+│   └── modules/           # 状态模块
+│       ├── live.js        # 直播状态管理
+│       ├── trtc.js        # TRTC状态管理
+│       └── user.js        # 用户状态管理
+├── App.vue                # 应用入口组件
+├── main.js                # 应用入口文件
+├── manifest.json          # 应用配置文件
+├── pages.json             # 页面路由配置
+└── uni.scss               # 全局样式变量
+
+```
+
 ## 简介
 本 demo 介绍了各 [API](https://web.sdk.qcloud.com/trtc/uniapp/doc/zh-cn/TrtcCloud.html#enterRoom) 的使用方法，提供了对应的场景 demo。
 

@@ -118,16 +118,16 @@ export const useLiveStore = defineStore('live', {
         this.updateLiveStatus('preparing')
         const trtcStore = useTrtcStore();
         const userStore = useUserStore();
-        // 初始化TRTC
-		    trtcStore.initTrtc();
-        const joinResult = trtcStore.joinRoom({
+
+        // 使用trtcStore的startLiveStream方法
+        const joinResult = trtcStore.startLiveStream({
           roomId: this.liveInfo.id,
           userId: this.anchor.id,
           userSig: userStore.userInfo.userSig,
-			    sdkAppId: userStore.userInfo.sdkAppId,
-          role: 'anchor' // 作为主播加入
+          sdkAppId: userStore.userInfo.sdkAppId,
+          viewId: 'local-video-view'
         });
-        console.log('加入房间结果：', JSON.stringify(joinResult), '角色：', 'anchor')
+
         if (!joinResult.success) {
           throw new Error(joinResult.error || '加入房间失败');
         }
@@ -140,12 +140,12 @@ export const useLiveStore = defineStore('live', {
           liveId: this.liveInfo.id
         }
       } catch (error) {
-        this.error = error.message || '开始直播失败'
-        console.error('error:',this.error);
+        this.error = error.message || 'LIVE开始直播失败'
+        console.error('error:', this.error);
         // 重置直播状态
-		    this.resetLiveState();
+        this.resetLiveState();
         // 返回上一页
-		    uni.navigateBack();
+        uni.navigateBack();
         return {
           success: false,
           error: this.error
@@ -161,11 +161,14 @@ export const useLiveStore = defineStore('live', {
         this.loading = true
         this.error = null
         
-        // 这里可以添加实际的结束直播逻辑，如断开TRTC连接等
+        // 使用trtcStore的endLiveStream方法
         const trtcStore = useTrtcStore();
-        trtcStore.stopLocalPreview();
-        trtcStore.stopLocalAudio();
-        trtcStore.leaveRoom();
+        const result = trtcStore.endLiveStream();
+
+        if (!result.success) {
+          throw new Error(result.error || '结束直播失败');
+        }
+
         // 更新直播状态为已结束
         this.updateLiveStatus('ended')
         
@@ -174,7 +177,7 @@ export const useLiveStore = defineStore('live', {
         }
       } catch (error) {
         this.error = error.message || '结束直播失败'
-        console.error('error:',this.error);
+        console.error('error:', this.error);
         return {
           success: false,
           error: this.error
@@ -190,19 +193,22 @@ export const useLiveStore = defineStore('live', {
         this.loading = true
         this.error = null
         
-        // 这里可以添加实际的加入直播间逻辑，如连接TRTC等
+        // 使用trtcStore的joinLiveStream方法
         const trtcStore = useTrtcStore();
         const userStore = useUserStore();
-        // 初始化TRTC
-		    trtcStore.initTrtc();
-        // 加入TRTC房间
-        trtcStore.joinRoom({
+
+        const result = trtcStore.joinLiveStream({
           roomId: liveId,
-          userId: userStore.userId,
-          userSig: userStore.userInfo.userSig,
-          sdkAppId: userStore.userInfo.sdkAppId,
-          role: 'audience' // 作为观众加入
+          userId: userData.userId,
+          userSig: userData.userSig,
+          sdkAppId: userData.sdkAppId,
+          remoteUserId: userData.remoteUserId, // 添加主播ID用于观看
+          remoteViewId: userData.remoteViewId
         });
+
+        if (!result.success) {
+          throw new Error(result.error || '加入直播间失败');
+        }
 
         // 添加观众到列表
         this.viewers.push({
@@ -220,7 +226,7 @@ export const useLiveStore = defineStore('live', {
         }
       } catch (error) {
         this.error = error.message || '加入直播间失败'
-        console.error('error:',this.error);
+        console.error('error:', this.error);
         return {
           success: false,
           error: this.error
@@ -235,7 +241,15 @@ export const useLiveStore = defineStore('live', {
       try {
         this.loading = true
         this.error = null
-        trtcStore.leaveRoom(userId);
+
+        // 使用trtcStore的leaveLiveStream方法
+        const trtcStore = useTrtcStore();
+        const result = trtcStore.leaveLiveStream();
+
+        if (!result.success) {
+          throw new Error(result.error || '离开直播间失败');
+        }
+
         // 从观众列表中移除
         const index = this.viewers.findIndex(viewer => viewer.id === userId)
         if (index !== -1) {
@@ -250,7 +264,7 @@ export const useLiveStore = defineStore('live', {
         }
       } catch (error) {
         this.error = error.message || '离开直播间失败'
-        console.error('error:',this.error);
+        console.error('error:', this.error);
         return {
           success: false,
           error: this.error

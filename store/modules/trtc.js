@@ -254,17 +254,15 @@ export const useTrtcStore = defineStore('trtc', {
     },
 
     // 离开房间
-    leaveRoom(remoteUserId) {
+    leaveRoom() {
       try {
         this.loading = true
         this.error = null
 
         if (this.trtcCloud && this.connectionState === 'connected') {
           // 使用TRTC API离开房间
-          if (remoteUserId) {
-            this.trtcCloud.stopRemoteStreamPreview(remoteUserId)
-          }
           this.trtcCloud.exitRoom()
+          // TODO onExitRoom回调内再开启直播权限
         }
 
         // 更新连接状态
@@ -559,6 +557,156 @@ export const useTrtcStore = defineStore('trtc', {
       } catch (error) {
         this.error = error.message || '销毁TRTC失败'
         console.error('error:',this.error);
+        return {
+          success: false,
+          error: this.error
+        }
+      } finally {
+        this.loading = false
+      }
+    },
+
+    // 新增方法：开始直播流（主播端）
+    startLiveStream(options) {
+      try {
+        this.loading = true
+        this.error = null
+
+        // 初始化TRTC
+        this.initTrtc();
+
+        // 作为主播加入房间
+        const joinResult = this.joinRoom({
+          ...options,
+          role: 'anchor'
+        });
+
+        if (!joinResult.success) {
+          return joinResult;
+        }
+
+        // 开启本地预览和音频
+        if (options.viewId) {
+          const localViewRes = this.startLocalPreview(options.viewId);
+          if(localViewRes.success) {
+            uni.showToast({
+              title: '本地预览启动成功',
+              icon: 'success'
+            });
+          } else {
+            uni.showToast({
+              title: localViewRes.error || '启动本地预览失败',
+              icon: 'none'
+            });
+          }
+        }
+
+        return {
+          success: true
+        }
+      } catch (error) {
+        this.error = error.message || 'TRTC开始直播流失败'
+        console.error('error:', this.error);
+        return {
+          success: false,
+          error: this.error
+        }
+      } finally {
+        this.loading = false
+      }
+    },
+
+    // 新增方法：加入直播流（观众端）
+    joinLiveStream(options) {
+      try {
+        this.loading = true
+        this.error = null
+
+        // 初始化TRTC
+        this.initTrtc();
+
+        // 作为观众加入房间
+        const joinResult = this.joinRoom({
+          ...options,
+          role: 'audience'
+        });
+
+        if (!joinResult.success) {
+          return joinResult;
+        }
+
+        // 如果提供了远程用户ID和视图ID，开始预览远程流
+        if (options.remoteUserId && options.remoteViewId) {
+          this.startRemoteStreamPreview(options.remoteUserId, options.remoteViewId);
+        }
+
+        return {
+          success: true
+        }
+      } catch (error) {
+        this.error = error.message || '加入直播流失败'
+        console.error('error:', this.error);
+        return {
+          success: false,
+          error: this.error
+        }
+      } finally {
+        this.loading = false
+      }
+    },
+
+    // 新增方法：结束直播流
+    endLiveStream() {
+      try {
+        this.loading = true
+        this.error = null
+
+        // 停止本地预览和音频
+        this.stopLocalPreview();
+        this.stopLocalAudio();
+
+        // 离开房间
+        this.leaveRoom();
+
+        return {
+          success: true
+        }
+      } catch (error) {
+        this.error = error.message || '结束直播流失败'
+        console.error('error:', this.error);
+        return {
+          success: false,
+          error: this.error
+        }
+      } finally {
+        this.loading = false
+      }
+    },
+
+    // 新增方法：离开直播流（观众端）
+    leaveLiveStream() {
+      try {
+        this.loading = true
+        this.error = null
+
+        // 停止远程流预览
+        if (this.remoteStreams.length > 0) {
+          this.remoteStreams.forEach(stream => {
+            if (stream.userId) {
+              this.stopRemoteStreamPreview(stream.userId);
+            }
+          });
+        }
+
+        // 离开房间
+        this.leaveRoom();
+
+        return {
+          success: true
+        }
+      } catch (error) {
+        this.error = error.message || '离开直播流失败'
+        console.error('error:', this.error);
         return {
           success: false,
           error: this.error
