@@ -2,9 +2,6 @@ import * as Pinia from 'pinia'
 import App from './App'
 import pinia from './store'
 import { createSSRApp } from 'vue'
-import { useLiveStore } from '@/store/modules/live';
-import { useUserStore } from '@/store/modules/user';
-import { useTrtcStore } from '@/store/modules/trtc';
 
 // #ifndef VUE3
 // import Vue from 'vue'

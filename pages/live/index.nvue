@@ -38,13 +38,12 @@
 import { ref, onMounted } from 'vue';
 import permision from "@/TrtcCloud/permission.js";
 import genTestUserSig from '@/debug/GenerateTestUserSig';
-import { useLiveStore } from '@/store/modules/live';
-import { useUserStore } from '@/store/modules/user';
-import { useTrtcStore } from '@/store/modules/trtc';
+import { useLiveStore, useUserStore } from '@/store'
 
 // 使用store
 const liveStore = useLiveStore();
 const userStore = useUserStore();
+const trtcStore = useTrtcStore();
 
 const liveTitle = ref('直播标题');
 const liveDescription = ref('直播描述');

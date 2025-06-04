@@ -98,9 +98,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import permision from "@/TrtcCloud/permission.js";
 import { onLoad,onUnload,onBackPress } from '@dcloudio/uni-app';
-import { useLiveStore } from '@/store/modules/live';
-import { useUserStore } from '@/store/modules/user';
-import { useTrtcStore } from '@/store/modules/trtc';
+import { useLiveStore, useUserStore,useTrtcStore } from '@/store';
 import TrtcLocalView from '@/TrtcCloud/view/TrtcLocalView';
 import TrtcRemoteView from '@/TrtcCloud/view/TrtcRemoteView';
 
