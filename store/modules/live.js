@@ -46,7 +46,23 @@ export const useLiveStore = defineStore('live', {
     // 直播错误信息
     error: null,
     // 直播加载状态
-    loading: false
+    loading: false,
+    beautyLevel: 5, // 美颜级别，取值范围0 - 9； 0表示关闭，9表示效果最明显。
+    currentBeautyStyle: TRTCBeautyStyle.TRTCBeautyStyleSmooth,
+    beautyStyleOptions: [
+      {
+        label: '光滑',
+        value: TRTCBeautyStyle.TRTCBeautyStyleSmooth
+      },
+      {
+        label: '自然',
+        value: TRTCBeautyStyle.TRTCBeautyStyleNature
+      },
+      {
+        label: '优图',
+        value: TRTCBeautyStyle.TRTCBeautyStylePitu
+      },
+    ]
   }),
   
   getters: {
@@ -153,6 +169,12 @@ export const useLiveStore = defineStore('live', {
       } finally {
         this.loading = false
       }
+    },
+    // 开始美颜
+    startBeauty() {
+      const trtcStore = useTrtcStore();
+      console.log(`设置美颜级别：${this.beautyLevel} 美颜模式：${this.currentBeautyStyle}`)
+      return trtcStore.setBeauty(this.beautyLevel, this.currentBeautyStyle);
     },
     
     // 结束直播

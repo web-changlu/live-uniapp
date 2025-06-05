@@ -79,6 +79,13 @@ export const useTrtcStore = defineStore('trtc', {
         this.loading = false
       }
     },
+    checkInstance() {
+      if (!this.trtcCloud) {
+        // 在uni-app中获取TRTC插件实例
+        this.trtcCloud = TrtcCloud.createInstance()
+        this.handleEvents();
+      }
+    },
     handleEvents(){
       this.trtcCloud.on('onWarning', (res) => {
         uni.showToast({
@@ -288,7 +295,12 @@ export const useTrtcStore = defineStore('trtc', {
         this.loading = false
       }
     },
-
+    // 设置美颜模式和级别
+    setBeauty(level, style) {
+      this.checkInstance()
+      this.trtcCloud.setBeautyLevel(level);
+      this.trtcCloud.setBeautyStyle(style);
+    },
     // 开启/关闭本地视频
     toggleLocalVideo(enabled) {
       try {
