@@ -1,7 +1,25 @@
 <template>
-  <view class="input-area">
-    <input class="message-input" v-model="inputContent" placeholder="说点什么..." @confirm="handleSend" />
-    <button class="send-button" @click="handleSend">发送</button>
+  <view class="input-container">
+    <view class="input-area">
+      <view class="input-wrapper">
+        <view class="input-icon-wrapper">
+          <text class="input-icon">💬</text>
+        </view>
+        <input
+          class="message-input"
+          v-model="inputContent"
+          placeholder="说点什么..."
+          placeholder-style="color: rgba(255, 255, 255, 0.5);"
+          confirm-type="send"
+          @confirm="handleSend"
+          @focus="handleFocus"
+          @blur="handleBlur"
+        />
+      </view>
+      <view class="send-button" :class="{ 'active': inputContent.trim() }" @click="handleSend">
+        <text class="send-icon">✈️</text>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -10,6 +28,7 @@ import { ref } from 'vue';
 
 const emit = defineEmits(['send-message']);
 const inputContent = ref('');
+const isFocused = ref(false);
 
 const handleSend = () => {
   if (!inputContent.value.trim()) return;
@@ -17,37 +36,144 @@ const handleSend = () => {
   emit('send-message', inputContent.value);
   inputContent.value = '';
 };
+
+const handleFocus = () => {
+  isFocused.value = true;
+};
+
+const handleBlur = () => {
+  isFocused.value = false;
+};
 </script>
 
 <style>
+/* 输入容器 */
+.input-container {
+  margin: 40rpx 20rpx 20rpx 20rpx;
+  /* padding: 20rpx; */
+  /* background: #f6f8fb; */
+  /* border-top: 1rpx solid #e9eef7; */
+}
+
 /* 输入区域 */
 .input-area {
   flex-direction: row;
   align-items: center;
-  margin-bottom: 20rpx;
+  justify-content: space-between;
+}
+
+/* 输入框包装器 */
+.input-wrapper {
+  flex: 1;
+  flex-direction: row;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 50rpx;
+  padding: 16rpx 24rpx;
+  margin-right: 16rpx;
+  border: 1rpx solid #e9eef7;
+  box-shadow: 8rpx 8rpx 16rpx #e9eef7, -8rpx -8rpx 16rpx #ffffff;
+}
+
+/* 输入图标包装器 */
+.input-icon-wrapper {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 30rpx;
+  background: #f6f8fb;
+  justify-content: center;
+  align-items: center;
+  margin-right: 16rpx;
+  border: 1rpx solid #e9eef7;
+  box-shadow: 4rpx 4rpx 8rpx #e9eef7, -4rpx -4rpx 8rpx #ffffff;
+}
+
+/* 输入图标 */
+.input-icon {
+  font-size: 32rpx;
+  color: #6b7a90;
 }
 
 /* 消息输入框 */
 .message-input {
   flex: 1;
-  background-color: #333333;
-  border-radius: 40rpx;
-  padding: 15rpx 30rpx;
-  color: #ffffff;
-  font-size: 28rpx;
-  margin-right: 20rpx;
+  color: #4a5568;
+  font-size: 30rpx;
   height: 80rpx;
+  padding: 0;
+  font-weight: 400;
+  line-height: 80rpx;
 }
 
 /* 发送按钮 */
 .send-button {
-  background-color: #007aff;
+  width: 88rpx;
+  height: 88rpx;
+  background: #f6f8fb;
+  border-radius: 44rpx;
+  justify-content: center;
+  align-items: center;
+  border: 1rpx solid #e9eef7;
+  box-shadow: 8rpx 8rpx 16rpx #e9eef7, -8rpx -8rpx 16rpx #ffffff;
+}
+
+/* 发送按钮激活状态 */
+.send-button.active {
+  background: linear-gradient(135deg, #007aff 0%, #5856d6 100%);
+  border-color: #007aff;
+  box-shadow: 8rpx 8rpx 16rpx rgba(0, 122, 255, 0.3), -8rpx -8rpx 16rpx #ffffff;
+}
+
+/* 发送图标 */
+.send-icon {
+  font-size: 36rpx;
+  color: #6b7a90;
+}
+
+.send-button.active .send-icon {
   color: #ffffff;
-  border-radius: 40rpx;
-  width: 120rpx;
-  height: 80rpx;
-  line-height: 80rpx;
-  text-align: center;
-  font-size: 28rpx;
+}
+
+/* #ifdef APP-NVUE */
+/* NVUE特定样式 */
+.input-container {
+  background-color: #f6f8fb;
+}
+
+.input-wrapper {
+  background-color: #ffffff;
+  border-color: #e9eef7;
+}
+
+.send-button {
+  background-color: #f6f8fb;
+  border-color: #e9eef7;
+}
+
+.send-button:active {
+  opacity: 0.8;
+  transform: scale(0.95);
+}
+/* #endif */
+
+/* #ifdef APP-PLUS */
+/* APP-PLUS平台特定样式 */
+.input-wrapper:focus-within {
+  border-color: #007aff;
+  box-shadow: 8rpx 8rpx 16rpx rgba(0, 122, 255, 0.2), -8rpx -8rpx 16rpx #ffffff;
+}
+/* #endif */
+
+/* 动画效果 */
+.send-button {
+  transition-property: background, border-color, box-shadow, transform;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-out;
+}
+
+.input-wrapper {
+  transition-property: border-color, box-shadow;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-out;
 }
 </style>

@@ -1,22 +1,40 @@
 <template>
-  <view class="action-buttons">
-    <view class="action-button" @click="handleLike">
-      <text class="action-icon">👍</text>
-      <text class="action-text">{{ likeCount }}</text>
+  <view class="action-container">
+    <view class="action-buttons">
+      <view class="action-button" @click="handleLike">
+        <view class="action-icon-wrapper like">
+          <text class="action-icon">👍</text>
+          <view class="ripple-effect"></view>
+        </view>
+        <text class="action-text">{{ likeCount }}</text>
+      </view>
+      <view class="action-button" @click="handleShare">
+        <view class="action-icon-wrapper share">
+          <text class="action-icon">📤</text>
+        </view>
+        <text class="action-text">分享</text>
+      </view>
+      <view class="action-button" @click="handleGift">
+        <view class="action-icon-wrapper gift">
+          <text class="action-icon">🎁</text>
+        </view>
+        <text class="action-text">礼物</text>
+      </view>
     </view>
-    <view class="action-button" @click="handleShare">
-      <text class="action-icon">📤</text>
-      <text class="action-text">分享</text>
-    </view>
-    <view class="action-button" @click="handleGift">
-      <text class="action-icon">🎁</text>
-      <text class="action-text">礼物</text>
-    </view>
-    <view v-if="isAnchor" class="action-button end-live" @click="handleEndLive">
-      <text class="action-text">结束直播</text>
-    </view>
-    <view v-else class="action-button leave-room" @click="handleLeaveRoom">
-      <text class="action-text">离开</text>
+
+    <view class="control-buttons">
+      <view v-if="isAnchor" class="end-live" @click="handleEndLive">
+        <view class="button-content">
+          <text class="control-icon">🔴</text>
+          <text class="control-text">结束直播</text>
+        </view>
+      </view>
+      <view v-else class="leave-room" @click="handleLeaveRoom">
+        <view class="button-content">
+          <text class="control-icon">👋</text>
+          <text class="control-text">离开直播间</text>
+        </view>
+      </view>
     </view>
   </view>
 </template>
@@ -57,11 +75,21 @@ const handleLeaveRoom = () => {
 </script>
 
 <style>
-/* 操作按钮 */
+/* 操作容器 */
+.action-container {
+  flex-direction: column;
+  padding: 20rpx;
+  background: #f6f8fb;
+  border-radius: 30rpx 30rpx 0 0;
+  border: 1rpx solid #e9eef7;
+  box-shadow: 8rpx 8rpx 16rpx #e9eef7, -8rpx -8rpx 16rpx #ffffff;
+}
+
+/* 操作按钮组 */
 .action-buttons {
   flex-direction: row;
   justify-content: space-around;
-  padding: 20rpx 0;
+  padding: 10rpx 0 30rpx 0;
 }
 
 /* 操作按钮项 */
@@ -70,32 +98,149 @@ const handleLeaveRoom = () => {
   align-items: center;
 }
 
+/* 操作图标包装器 */
+.action-icon-wrapper {
+  position: relative;
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 16rpx;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10rpx;
+  background: #ffffff;
+  border: 1rpx solid #e9eef7;
+  box-shadow: 4rpx 4rpx 8rpx #e9eef7, -4rpx -4rpx 8rpx #ffffff;
+}
+
+/* 不同类型的图标背景 */
+.like {
+  background: #ffffff;
+}
+
+.share {
+  background: #ffffff;
+}
+
+.gift {
+  background: #ffffff;
+}
+
+/* 波纹效果 */
+.ripple-effect {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 16rpx;
+  background: radial-gradient(circle, rgba(0, 122, 255, 0.08) 0%, transparent 70%);
+  opacity: 0;
+}
+
 /* 操作图标 */
 .action-icon {
-  font-size: 40rpx;
-  margin-bottom: 10rpx;
+  font-size: 28rpx;
+  color: #4a5568;
 }
 
 /* 操作文本 */
 .action-text {
-  color: #ffffff;
-  font-size: 24rpx;
+  color: #6b7a90;
+  font-size: 20rpx;
+  font-weight: 500;
+  text-shadow: 0 1rpx 2rpx #f0f0f3;
+}
+
+/* 控制按钮组 */
+.control-buttons {
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 20rpx;
+}
+
+/* 按钮内容 */
+.button-content {
+  flex-direction: row;
+  align-items: center;
+}
+
+.control-icon {
+  font-size: 22rpx;
+  margin-right: 8rpx;
+  color: #4a5568;
 }
 
 /* 结束直播按钮 */
 .end-live {
-  width: 200rpx;
-  height: 60rpx;
-  border-radius: 40rpx;
-  padding: 10rpx 30rpx;
-  line-height: 60rpx;
-  background-color: #ff3b30;
+  background: linear-gradient(135deg, #ff3b30 0%, #ff9500 100%);
+  border-radius: 20rpx;
+  padding: 12rpx 32rpx;
+  border: 1rpx solid #ffb199;
+  color: #fff;
+  box-shadow: 4rpx 4rpx 12rpx #ffe0d3, -4rpx -4rpx 12rpx #fff0e0;
 }
 
 /* 离开房间按钮 */
 .leave-room {
-  background-color: #ff9500;
-  border-radius: 40rpx;
-  padding: 10rpx 30rpx;
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 12rpx 32rpx;
+  border: 1rpx solid #e9eef7;
+  color: #4a5568;
+  box-shadow: 4rpx 4rpx 12rpx #e9eef7, -4rpx -4rpx 12rpx #ffffff;
 }
+
+/* 控制文本 */
+.control-text {
+  color: inherit;
+  font-size: 22rpx;
+  font-weight: 500;
+  text-shadow: 0 1rpx 2rpx #f0f0f3;
+}
+
+/* #ifdef APP-NVUE */
+.action-container, .action-icon-wrapper, .leave-room {
+  background-color: #f6f8fb;
+  border-color: #e9eef7;
+}
+.end-live {
+  background-color: #ffb199;
+  border-color: #ffb199;
+}
+/* #endif */
+
+/* #ifdef APP-PLUS */
+/* APP-PLUS平台支持更多特性 */
+.action-container {
+  backdrop-filter: blur(20rpx);
+  box-shadow: 0 -8rpx 32rpx rgba(0, 0, 0, 0.1);
+}
+
+.action-icon-wrapper {
+  backdrop-filter: blur(10rpx);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+}
+
+.end-live {
+  box-shadow: 0 8rpx 24rpx rgba(255, 59, 48, 0.3);
+}
+
+.leave-room {
+  box-shadow: 0 8rpx 24rpx rgba(0, 122, 255, 0.3);
+}
+
+.action-icon-wrapper:hover .ripple-effect {
+  opacity: 1;
+  animation: ripple 0.6s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+/* #endif */
 </style>

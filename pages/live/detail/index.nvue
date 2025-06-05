@@ -1,68 +1,71 @@
 <template>
-	<view class="page-container">
-		<!-- 视频播放区域 -->
-		<VideoPlayer
-			:isAnchor="isAnchor"
-			:localStream="trtcStore.localStream"
-			:hasRemoteStream="hasRemoteStream"
-			:localViewId="localViewId"
-			:remoteViewId="remoteViewId"
-			:remoteUserId="remoteUserId"
-		/>
+  <view class="page-container">
+    <!-- 视频区域 -->
+    <view class="video-section">
+      <!-- 视频播放区域 -->
+      <VideoPlayer
+        :isAnchor="isAnchor"
+        :localStream="trtcStore.localStream"
+        :hasRemoteStream="hasRemoteStream"
+        :localViewId="localViewId"
+        :remoteViewId="remoteViewId"
+        :remoteUserId="remoteUserId"
+      />
 
-		<!-- 直播信息 -->
-		<LiveHeader
-			:anchor="liveStore.anchor"
-			:stats="liveStore.stats"
-			:liveInfo="liveStore.liveInfo"
-		/>
+      <!-- 直播信息 -->
+      <LiveHeader
+        :anchor="liveStore.anchor"
+        :stats="liveStore.stats"
+        :liveInfo="liveStore.liveInfo"
+      />
 
-		<!-- 视频控制按钮 -->
-		<ControlPanel
-			v-if="isAnchor"
-			:localStream="trtcStore.localStream"
-			@toggle-video="toggleVideo"
-			@toggle-audio="toggleAudio"
-			@switch-camera="switchCamera"
-			@show-beauty="showBeautyPanel"
-		/>
+      <!-- 视频控制按钮 -->
+      <ControlPanel
+        v-if="isAnchor"
+        :localStream="trtcStore.localStream"
+        @toggle-video="toggleVideo"
+        @toggle-audio="toggleAudio"
+        @switch-camera="switchCamera"
+        @show-beauty="showBeautyPanel"
+      />
+    </view>
 
-		<!-- 互动区域 -->
-		<view class="interaction-container">
-			<!-- 消息列表 -->
-			<ChatList
-				:messages="liveStore.messages"
-				:lastMessageId="lastMessageId"
-			/>
+    <!-- 互动区域 -->
+    <view class="interaction-section">
+      <!-- 消息列表 -->
+      <ChatList
+        :messages="liveStore.messages"
+        :lastMessageId="lastMessageId"
+      />
 
-			<!-- 输入区域 -->
-			<MessageInput @send-message="sendMessage" />
+      <!-- 输入区域 -->
+      <MessageInput @send-message="sendMessage" />
 
-			<!-- 操作按钮 -->
-			<InteractionBar
-				:isAnchor="isAnchor"
-				:likeCount="liveStore.stats.likeCount"
-				@like="handleLike"
-				@share="handleShare"
-				@gift="handleGift"
-				@end-live="endLive"
-				@leave-room="leaveRoom"
-			/>
-		</view>
+      <!-- 操作按钮 -->
+      <InteractionBar
+        :isAnchor="isAnchor"
+        :likeCount="liveStore.stats.likeCount"
+        @like="handleLike"
+        @share="handleShare"
+        @gift="handleGift"
+        @end-live="endLive"
+        @leave-room="leaveRoom"
+      />
+    </view>
 
-		<!-- 美颜面板 -->
-		<uni-popup ref="beautyPopup" type="bottom">
-			<BeautyPanel
-				:beautyStyleOptions="liveStore.beautyStyleOptions"
-				:currentBeautyStyle="liveStore.currentBeautyStyle"
-				:beautyLevel="liveStore.beautyLevel"
-				@close="hideBeautyPanel"
-				@style-change="setBeautyStyle"
-				@level-change="setBeautyLevel"
-				@apply="applyBeauty"
-			/>
-		</uni-popup>
-	</view>
+    <!-- 美颜面板 -->
+    <uni-popup ref="beautyPopup" type="bottom">
+      <BeautyPanel
+        :beautyStyleOptions="liveStore.beautyStyleOptions"
+        :currentBeautyStyle="liveStore.currentBeautyStyle"
+        :beautyLevel="liveStore.beautyLevel"
+        @close="hideBeautyPanel"
+        @style-change="setBeautyStyle"
+        @level-change="setBeautyLevel"
+        @apply="applyBeauty"
+      />
+    </uni-popup>
+  </view>
 </template>
 
 <script setup>
@@ -97,315 +100,315 @@ const remoteViewId = trtcStore.remoteViewId
 
 // 计算属性
 const isAnchor = computed(() => {
-	return userStore.userId === liveStore.anchor.id;
+  return userStore.userId === liveStore.anchor.id;
 });
 
 const hasRemoteStream = computed(() => {
-	return trtcStore.remoteStreams.length > 0;
+  return trtcStore.remoteStreams.length > 0;
 });
 
 // 视频控制方法
 const toggleVideo = () => {
-	trtcStore.toggleLocalVideo();
+  trtcStore.toggleLocalVideo();
 
-	if (enabled && !trtcStore.localStream.videoView) {
-		// 如果开启视频且没有视图，则启动本地预览
-		trtcStore.startLocalPreview();
-	} else if (!enabled) {
-		// 如果关闭视频，则停止本地预览
-		trtcStore.stopLocalPreview();
-	}
+  if (enabled && !trtcStore.localStream.videoView) {
+    // 如果开启视频且没有视图，则启动本地预览
+    trtcStore.startLocalPreview();
+  } else if (!enabled) {
+    // 如果关闭视频，则停止本地预览
+    trtcStore.stopLocalPreview();
+  }
 };
 
 const toggleAudio = () => {
-	trtcStore.toggleLocalAudio();
+  trtcStore.toggleLocalAudio();
 };
 
 const switchCamera = () => {
-	// 直接调用trtcStore的switchCamera方法
-	trtcStore.switchCamera();
+  // 直接调用trtcStore的switchCamera方法
+  trtcStore.switchCamera();
 };
 
 // 发送消息
 const sendMessage = (content) => {
-	const message = liveStore.sendMessage({
-		userId: userStore.userId,
-		userName: userStore.userName,
-		userAvatar: userStore.userAvatar,
-		content: content,
-		type: 'text'
-	});
+  const message = liveStore.sendMessage({
+    userId: userStore.userId,
+    userName: userStore.userName,
+    userAvatar: userStore.userAvatar,
+    content: content,
+    type: 'text'
+  });
 
-	// 设置最后一条消息ID，用于滚动到底部
-	lastMessageId.value = message.id;
+  // 设置最后一条消息ID，用于滚动到底部
+  lastMessageId.value = message.id;
 };
 
 // 点赞
 const handleLike = () => {
-	liveStore.addLike();
+  liveStore.addLike();
 };
 
 // 分享
 const handleShare = () => {
-	uni.showActionSheet({
-		itemList: ['分享到微信', '分享到朋友圈', '复制链接'],
-		success: (res) => {
-			liveStore.addShare();
-			uni.showToast({
-				title: '分享成功',
-				icon: 'success'
-			});
-		}
-	});
+  uni.showActionSheet({
+    itemList: ['分享到微信', '分享到朋友圈', '复制链接'],
+    success: (res) => {
+      liveStore.addShare();
+      uni.showToast({
+        title: '分享成功',
+        icon: 'success'
+      });
+    }
+  });
 };
 
 // 礼物
 const handleGift = () => {
-	uni.showActionSheet({
-		itemList: ['鲜花 (10币)', '掌声 (50币)', '火箭 (100币)'],
-		success: (res) => {
-			let giftInfo = {};
+  uni.showActionSheet({
+    itemList: ['鲜花 (10币)', '掌声 (50币)', '火箭 (100币)'],
+    success: (res) => {
+      let giftInfo = {};
 
-			switch (res.tapIndex) {
-				case 0:
-					giftInfo = {
-						giftId: 'gift_flower',
-						giftName: '鲜花',
-						giftImage: '/static/images/gift-flower.png',
-						giftValue: 10
-					};
-					break;
-				case 1:
-					giftInfo = {
-						giftId: 'gift_applause',
-						giftName: '掌声',
-						giftImage: '/static/images/gift-applause.png',
-						giftValue: 50
-					};
-					break;
-				case 2:
-					giftInfo = {
-						giftId: 'gift_rocket',
-						giftName: '火箭',
-						giftImage: '/static/images/gift-rocket.png',
-						giftValue: 100
-					};
-					break;
-			}
+      switch (res.tapIndex) {
+        case 0:
+          giftInfo = {
+            giftId: 'gift_flower',
+            giftName: '鲜花',
+            giftImage: '/static/images/gift-flower.png',
+            giftValue: 10
+          };
+          break;
+        case 1:
+          giftInfo = {
+            giftId: 'gift_applause',
+            giftName: '掌声',
+            giftImage: '/static/images/gift-applause.png',
+            giftValue: 50
+          };
+          break;
+        case 2:
+          giftInfo = {
+            giftId: 'gift_rocket',
+            giftName: '火箭',
+            giftImage: '/static/images/gift-rocket.png',
+            giftValue: 100
+          };
+          break;
+      }
 
-			liveStore.sendGift({
-				userId: userStore.userId,
-				userName: userStore.userName,
-				userAvatar: userStore.userAvatar,
-				...giftInfo
-			});
+      liveStore.sendGift({
+        userId: userStore.userId,
+        userName: userStore.userName,
+        userAvatar: userStore.userAvatar,
+        ...giftInfo
+      });
 
-			uni.showToast({
-				title: '赠送成功',
-				icon: 'success'
-			});
-		}
-	});
+      uni.showToast({
+        title: '赠送成功',
+        icon: 'success'
+      });
+    }
+  });
 };
 
 // 结束直播（主播）
 const endLive = () => {
-	uni.showModal({
-		title: '结束直播',
-		content: '确定要结束当前直播吗？',
-		success: async (res) => {
-			if (res.confirm) {
-				// 显示加载中
-				uni.showLoading({
-					title: '结束直播中...'
-				});
+  uni.showModal({
+    title: '结束直播',
+    content: '确定要结束当前直播吗？',
+    success: async (res) => {
+      if (res.confirm) {
+        // 显示加载中
+        uni.showLoading({
+          title: '结束直播中...'
+        });
 
-				try {
-					// 结束直播
-					const endRes = liveStore.endLive();
-					if (!endRes.success) {
-						uni.showToast({
-							title: endRes.error || '直播结束直播失败',
-							icon: 'none'
-						});
-						return;
-					}
-					// 销毁TRTC
-					trtcStore.destroyTrtc();
+        try {
+          // 结束直播
+          const endRes = liveStore.endLive();
+          if (!endRes.success) {
+            uni.showToast({
+              title: endRes.error || '直播结束直播失败',
+              icon: 'none'
+            });
+            return;
+          }
+          // 销毁TRTC
+          trtcStore.destroyTrtc();
 
-					// 隐藏加载中
-					uni.hideLoading();
+          // 隐藏加载中
+          uni.hideLoading();
 
-					// 返回上一页
-					uni.navigateBack();
-				} catch (error) {
-					// 隐藏加载中
-					uni.hideLoading();
+          // 返回上一页
+          uni.navigateBack();
+        } catch (error) {
+          // 隐藏加载中
+          uni.hideLoading();
 
-					// 显示错误提示
-					uni.showToast({
-						title: error.message || '结束直播失败',
-						icon: 'none'
-					});
-				}
-			}
-		}
-	});
+          // 显示错误提示
+          uni.showToast({
+            title: error.message || '结束直播失败',
+            icon: 'none'
+          });
+        }
+      }
+    }
+  });
 };
 
 // 离开房间（观众）
 const leaveRoom = () => {
-	// 显示加载中
-	uni.showLoading({
-		title: '离开房间中...'
-	});
+  // 显示加载中
+  uni.showLoading({
+    title: '离开房间中...'
+  });
 
-	try {
-		// 离开直播间
-		const leaveRes = liveStore.leaveLiveRoom(userStore.userId);
-		if (!leaveRes.success) {
-			uni.showToast({
-				title: leaveRes.error || '观众离开直播间失败',
-				icon: 'none'
-			});
-			return;
-		}
-		// 销毁TRTC
-		trtcStore.destroyTrtc();
+  try {
+    // 离开直播间
+    const leaveRes = liveStore.leaveLiveRoom(userStore.userId);
+    if (!leaveRes.success) {
+      uni.showToast({
+        title: leaveRes.error || '观众离开直播间失败',
+        icon: 'none'
+      });
+      return;
+    }
+    // 销毁TRTC
+    trtcStore.destroyTrtc();
 
-		// 隐藏加载中
-		uni.hideLoading();
+    // 隐藏加载中
+    uni.hideLoading();
 
-		// 返回上一页
-		uni.navigateBack();
-	} catch (error) {
-		// 隐藏加载中
-		uni.hideLoading();
+    // 返回上一页
+    uni.navigateBack();
+  } catch (error) {
+    // 隐藏加载中
+    uni.hideLoading();
 
-		// 显示错误提示
-		uni.showToast({
-			title: error.message || '离开房间失败',
-			icon: 'none'
-		});
-	}
+    // 显示错误提示
+    uni.showToast({
+      title: error.message || '离开房间失败',
+      icon: 'none'
+    });
+  }
 };
 
 // 加入房间
 const joinRoom = () => {
-	if (!roomId.value) return;
+  if (!roomId.value) return;
 
-	// 显示加载中
-	uni.showLoading({
-		title: '加入房间中...'
-	});
+  // 显示加载中
+  uni.showLoading({
+    title: '加入房间中...'
+  });
 
-	try {
-		// 加入直播间
-		const joinRes = liveStore.joinLiveRoom(roomId.value, {
-			userId: userStore.userId,
-			userName: userStore.userInfo.userName,
-			userAvatar: userStore.userInfo.userAvatar,
-			userSig: userStore.userInfo.userSig,
-			sdkAppId: userStore.userInfo.sdkAppId,
-			remoteUserId: remoteUserId.value,
-			remoteViewId
-		});
+  try {
+    // 加入直播间
+    const joinRes = liveStore.joinLiveRoom(roomId.value, {
+      userId: userStore.userId,
+      userName: userStore.userInfo.userName,
+      userAvatar: userStore.userInfo.userAvatar,
+      userSig: userStore.userInfo.userSig,
+      sdkAppId: userStore.userInfo.sdkAppId,
+      remoteUserId: remoteUserId.value,
+      remoteViewId
+    });
 
-		if (!joinRes.success) {
-			console.warn('观众加入房间失败', joinRes.error);
-			uni.showToast({
-				title: joinRes.error || '加入房间失败',
-				icon: 'none'
-			});
-			return;
-		}
-		// 隐藏加载中
-		uni.hideLoading();
-	} catch (error) {
-		// 隐藏加载中
-		uni.hideLoading();
+    if (!joinRes.success) {
+      console.warn('观众加入房间失败', joinRes.error);
+      uni.showToast({
+        title: joinRes.error || '加入房间失败',
+        icon: 'none'
+      });
+      return;
+    }
+    // 隐藏加载中
+    uni.hideLoading();
+  } catch (error) {
+    // 隐藏加载中
+    uni.hideLoading();
 
-		// 显示错误提示
-		uni.showToast({
-			title: error.message || '加入房间失败',
-			icon: 'none'
-		});
+    // 显示错误提示
+    uni.showToast({
+      title: error.message || '加入房间失败',
+      icon: 'none'
+    });
 
-		// 返回上一页
-		uni.navigateBack();
-	}
+    // 返回上一页
+    uni.navigateBack();
+  }
 };
 
 const checkPermission = () => {
-	if (uni.getSystemInfoSync().platform === 'android') {
-		permision.requestAndroidPermission('android.permission.RECORD_AUDIO');
-		permision.requestAndroidPermission('android.permission.CAMERA');
-	}
+  if (uni.getSystemInfoSync().platform === 'android') {
+    permision.requestAndroidPermission('android.permission.RECORD_AUDIO');
+    permision.requestAndroidPermission('android.permission.CAMERA');
+  }
 };
 
 onLoad((option) => {
-	console.log('onLoad触发----->', JSON.stringify(option), 'isAnchor', isAnchor.value);
-	checkPermission();
-	console.log('option', JSON.stringify(option));
-	if (option && option.roomId) {
-		roomId.value = option.roomId;
-	}
-	if (option && option.remoteUserId) {
-		remoteUserId.value = option.remoteUserId;
-	}
-	if(!roomId.value) {
-		uni.showToast({
-			title: '房间ID不存在',
-			icon: 'none'
-		});
-		uni.navigateBack();
-	}
-	// #ifdef APP-PLUS
-	// 如果是主播，初始化本地预览
-	if (userStore.userId === liveStore.anchor.id) {
-		console.log(roomId.value, '开始直播');
-		
-		const liveRes = liveStore.startLive();
-		if (!liveRes.success) {
-			console.warn('开始直播失败', liveRes.error);
-			uni.showToast({
-				title: liveRes.error || '开始直播失败',
-				icon: 'none'
-			}); 
-		}
-	} else {
-		// 如果是观众，加入房间
-		joinRoom();
-	}
-	// #endif
+  console.log('onLoad触发----->', JSON.stringify(option), 'isAnchor', isAnchor.value);
+  checkPermission();
+  console.log('option', JSON.stringify(option));
+  if (option && option.roomId) {
+    roomId.value = option.roomId;
+  }
+  if (option && option.remoteUserId) {
+    remoteUserId.value = option.remoteUserId;
+  }
+  if(!roomId.value) {
+    uni.showToast({
+      title: '房间ID不存在',
+      icon: 'none'
+    });
+    uni.navigateBack();
+  }
+  // #ifdef APP-PLUS
+  // 如果是主播，初始化本地预览
+  if (userStore.userId === liveStore.anchor.id) {
+    console.log(roomId.value, '开始直播');
+
+    const liveRes = liveStore.startLive();
+    if (!liveRes.success) {
+      console.warn('开始直播失败', liveRes.error);
+      uni.showToast({
+        title: liveRes.error || '开始直播失败',
+        icon: 'none'
+      });
+    }
+  } else {
+    // 如果是观众，加入房间
+    joinRoom();
+  }
+  // #endif
 });
 
 onMounted(() => {
-	console.log('onMounted触发-----');
+  console.log('onMounted触发-----');
 });
 
 const destoryHandle = () => {
-	// #ifdef APP-PLUS
-	// 如果是主播，结束直播
-	if (isAnchor.value && liveStore.liveStatus === 'live') {
-		endLive();
-	}
+  // #ifdef APP-PLUS
+  // 如果是主播，结束直播
+  if (isAnchor.value && liveStore.liveStatus === 'live') {
+    endLive();
+  }
 
-	// 如果是观众，离开直播间
-	if (!isAnchor.value) {
-		liveStore.leaveLiveRoom(userStore.userId);
-	}
-	// #endif
+  // 如果是观众，离开直播间
+  if (!isAnchor.value) {
+    liveStore.leaveLiveRoom(userStore.userId);
+  }
+  // #endif
 };
 
 onUnload(() => {
-	console.log('-----onUnload触发-----');
-	destoryHandle();
+  console.log('-----onUnload触发-----');
+  destoryHandle();
 });
 
 onBackPress(() => {
-	console.log('-----onBackPress触发-----');
-	destoryHandle();
+  console.log('-----onBackPress触发-----');
+  destoryHandle();
 });
 
 // 美颜面板引用
@@ -413,60 +416,100 @@ const beautyPopup = ref(null);
 
 // 显示美颜面板
 const showBeautyPanel = () => {
-	beautyPopup.value.open();
+  beautyPopup.value.open();
 };
 
 // 隐藏美颜面板
 const hideBeautyPanel = () => {
-	beautyPopup.value.close();
+  beautyPopup.value.close();
 };
 
 // 设置美颜风格
 const setBeautyStyle = (styleValue) => {
-	liveStore.$patch({
-		currentBeautyStyle: styleValue
-	});
+  liveStore.$patch({
+    currentBeautyStyle: styleValue
+  });
 };
 
 // 设置美颜级别
 const setBeautyLevel = (value) => {
-	liveStore.$patch({
-		beautyLevel: value
-	});
+  liveStore.$patch({
+    beautyLevel: value
+  });
 };
 
 // 应用美颜设置
 const applyBeauty = () => {
-	const result = liveStore.startBeauty();
-	if (result.success) {
-		uni.showToast({
-			title: '美颜设置已应用',
-			icon: 'success'
-		});
-	} else {
-		uni.showToast({
-			title: result.error || '美颜设置失败',
-			icon: 'none'
-		});
-	}
-	hideBeautyPanel();
+  const result = liveStore.startBeauty();
+  if (result.success) {
+    uni.showToast({
+      title: '美颜设置已应用',
+      icon: 'success'
+    });
+  } else {
+    uni.showToast({
+      title: result.error || '美颜设置失败',
+      icon: 'none'
+    });
+  }
+  hideBeautyPanel();
 };
 </script>
 
 <style>
 /* 页面容器 */
 .page-container {
-	flex: 1;
-	flex-direction: column;
-	width: 750rpx;
-	padding-top: 60rpx;
+  flex: 1;
+  flex-direction: column;
+  width: 750rpx;
+  background-color: #f6f8fb;
 }
 
-/* 互动容器 */
-.interaction-container {
-	flex: 1;
-	flex-direction: column;
-	padding: 20rpx;
-	background-color: #1a1a1a;
+/* 视频区域 */
+.video-section {
+  position: relative;
+  width: 750rpx;
+  height: 60vh; /* 视频区域占60%的视口高度 */
+  overflow: hidden;
+  background-color: #f6f8fb;
 }
+
+/* 互动区域 */
+.interaction-section {
+  flex: 1;
+  flex-direction: column;
+  padding: 20rpx;
+  background-color: #ffffff;
+  border-top-left-radius: 40rpx;
+  border-top-right-radius: 40rpx;
+  margin-top: -40rpx; /* 创建重叠效果 */
+  padding-top: 40rpx;
+  box-shadow: 0 -8rpx 32rpx rgba(0, 0, 0, 0.08);
+}
+
+/* #ifdef APP-PLUS */
+/* 状态栏适配 */
+.page-container {
+  padding-top: var(--status-bar-height);
+}
+
+/* APP-PLUS平台支持更多特性 */
+.interaction-section {
+  backdrop-filter: blur(20rpx);
+  box-shadow: 0 -8rpx 32rpx rgba(0, 0, 0, 0.08);
+}
+/* #endif */
+
+/* #ifdef APP-NVUE */
+/* NVUE特定样式 */
+.page-container {
+  background-color: #f6f8fb;
+}
+
+.interaction-section {
+  background-color: #ffffff;
+  border-top-width: 1rpx;
+  border-top-color: rgba(0, 0, 0, 0.05);
+}
+/* #endif */
 </style>

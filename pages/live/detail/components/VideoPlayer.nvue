@@ -64,35 +64,59 @@ defineProps({
 .video-container {
   position: relative;
   width: 750rpx;
-  height: 900rpx;
-  background-color: rgb(28, 194, 206);
+  height: 600rpx;
+  background: #f6f8fb;
+  overflow: hidden;
 }
 
 /* 本地视频和远程视频 */
 .local-video, .remote-video {
   width: 750rpx;
-  height: 900rpx;
+  height: 600rpx;
 }
 
 /* 视频视图 */
 .video-view {
   width: 750rpx;
-  height: 900rpx;
+  height: 600rpx;
   flex: 1;
 }
 
 /* 占位视频 */
 .placeholder-video {
   width: 750rpx;
-  height: 900rpx;
+  height: 600rpx;
   justify-content: center;
   align-items: center;
-  background-color: #333333;
+  background: #ffffff;
+  border: 1rpx solid #e9eef7;
+  box-shadow: 8rpx 8rpx 16rpx #e9eef7, -8rpx -8rpx 16rpx #ffffff;
 }
 
 /* 占位文本 */
 .placeholder-text {
-  color: #ffffff;
+  color: #6b7a90;
   font-size: 32rpx;
+  text-shadow: 0 2rpx 4rpx #f0f0f3;
+  text-align: center;
 }
+
+/* #ifdef APP-NVUE */
+/* NVUE特定样式 */
+.video-container {
+  background-color: #f6f8fb;
+}
+
+.placeholder-video {
+  background-color: #ffffff;
+  border-color: #e9eef7;
+}
+/* #endif */
+
+/* #ifdef APP-PLUS */
+/* APP-PLUS平台支持更多特性 */
+.placeholder-video {
+  backdrop-filter: blur(15rpx);
+}
+/* #endif */
 </style>

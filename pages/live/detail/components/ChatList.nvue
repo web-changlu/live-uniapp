@@ -1,10 +1,38 @@
 <template>
-  <scroll-view class="message-list" scroll-y="true" :scroll-into-view="lastMessageId">
-    <view v-for="(message, index) in messages" :key="message.id" :id="message.id" class="message-item">
-      <text class="message-sender">{{ message.userName }}:</text>
-      <text class="message-content">{{ message.content }}</text>
+  <view class="chat-container">
+    <view class="chat-header">
+      <view class="header-left">
+        <text class="chat-icon">💬</text>
+        <text class="chat-title">聊天消息</text>
+      </view>
+      <view class="chat-count-badge">
+        <text class="chat-count">{{ messages.length }}</text>
+      </view>
     </view>
-  </scroll-view>
+    <scroll-view
+      class="message-list"
+      scroll-y="true"
+      :scroll-into-view="lastMessageId"
+      :show-scrollbar="false"
+      scroll-with-animation
+    >
+      <view v-for="(message, index) in messages" :key="message.id" :id="message.id" class="message-item">
+        <view class="message-avatar">
+          <text class="avatar-text">{{ message.userName.substring(0, 1) }}</text>
+        </view>
+        <view class="message-content-wrapper">
+          <text class="message-sender">{{ message.userName }}</text>
+          <view class="message-bubble">
+            <text class="message-content">{{ message.content }}</text>
+          </view>
+        </view>
+      </view>
+      <view v-if="messages.length === 0" class="empty-messages">
+        <text class="empty-icon">🎭</text>
+        <text class="empty-text">暂无消息，快来互动吧~</text>
+      </view>
+    </scroll-view>
+  </view>
 </template>
 
 <script setup>
@@ -21,31 +49,173 @@ defineProps({
 </script>
 
 <style>
+/* 聊天容器 */
+.chat-container {
+  flex-direction: column;
+  /* background: #f6f8fb; */
+  /* border-radius: 25rpx; */
+  /* margin: 0 20rpx; */
+  padding: 20rpx;
+  height: 350rpx;
+  /* border: 1rpx solid #e9eef7; */
+  /* box-shadow: 8rpx 8rpx 16rpx #e9eef7, -8rpx -8rpx 16rpx #ffffff; */
+}
+
+/* 聊天头部 */
+.chat-header {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16rpx;
+  border-bottom-width: 1rpx;
+  border-bottom-color: #e9eef7;
+  margin-bottom: 16rpx;
+}
+
+.header-left {
+  flex-direction: row;
+  align-items: center;
+}
+
+.chat-icon {
+  font-size: 28rpx;
+  margin-right: 12rpx;
+  color: #6b7a90;
+}
+
+.chat-title {
+  color: #4a5568;
+  font-size: 28rpx;
+  font-weight: bold;
+  text-shadow: 0 1rpx 2rpx #f0f0f3;
+}
+
+.chat-count-badge {
+  background: linear-gradient(45deg, #007aff, #5856d6);
+  border-radius: 20rpx;
+  padding: 6rpx 12rpx;
+  border: 1rpx solid #e9eef7;
+  box-shadow: 4rpx 4rpx 8rpx #e9eef7, -4rpx -4rpx 8rpx #ffffff;
+}
+
+.chat-count {
+  color: #ffffff;
+  font-size: 22rpx;
+  font-weight: bold;
+}
+
 /* 消息列表 */
 .message-list {
   flex: 1;
-  height: 250rpx;
-  margin-bottom: 20rpx;
+  height: 280rpx;
 }
 
 /* 消息项 */
 .message-item {
   flex-direction: row;
-  margin-bottom: 15rpx;
-  flex-wrap: wrap;
+  padding: 12rpx 0;
+  align-items: flex-start;
+}
+
+/* 头像 */
+.message-avatar {
+  width: 50rpx;
+  height: 50rpx;
+  border-radius: 25rpx;
+  background: linear-gradient(135deg, #007aff, #5856d6);
+  justify-content: center;
+  align-items: center;
+  margin-right: 12rpx;
+  border: 2rpx solid #e9eef7;
+}
+
+.avatar-text {
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: bold;
+}
+
+/* 消息内容包装器 */
+.message-content-wrapper {
+  flex: 1;
+  flex-direction: column;
 }
 
 /* 消息发送者 */
 .message-sender {
-  color: #ffcc00;
-  font-size: 28rpx;
-  margin-right: 10rpx;
+  color: #007aff;
+  font-size: 24rpx;
+  font-weight: 500;
+  margin-bottom: 6rpx;
+  text-shadow: 0 1rpx 2rpx #f0f0f3;
+}
+
+/* 消息气泡 */
+.message-bubble {
+  background: #ffffff;
+  border-radius: 18rpx;
+  padding: 12rpx 16rpx;
+  border: 1rpx solid #e9eef7;
+  align-self: flex-start;
+  box-shadow: 4rpx 4rpx 8rpx #e9eef7, -4rpx -4rpx 8rpx #ffffff;
 }
 
 /* 消息内容 */
 .message-content {
-  color: #ffffff;
-  font-size: 28rpx;
-  flex: 1;
+  color: #4a5568;
+  font-size: 26rpx;
+  line-height: 36rpx;
 }
+
+/* 空消息状态 */
+.empty-messages {
+  justify-content: center;
+  align-items: center;
+  height: 200rpx;
+  flex-direction: column;
+}
+
+.empty-icon {
+  font-size: 48rpx;
+  margin-bottom: 16rpx;
+  color: #6b7a90;
+}
+
+.empty-text {
+  color: #6b7a90;
+  font-size: 26rpx;
+  text-align: center;
+}
+
+/* #ifdef APP-NVUE */
+/* NVUE特定样式 */
+.chat-container {
+  background-color: #f6f8fb;
+  border-color: #e9eef7;
+}
+
+.message-bubble {
+  background-color: #ffffff;
+  border-color: #e9eef7;
+}
+
+.message-item:active {
+  background-color: #f0f0f3;
+}
+/* #endif */
+
+/* #ifdef APP-PLUS */
+/* APP-PLUS平台支持更多特性 */
+.chat-container {
+  backdrop-filter: blur(20rpx);
+}
+
+.message-bubble {
+  backdrop-filter: blur(10rpx);
+}
+
+.chat-count-badge {
+  box-shadow: 0 4rpx 12rpx rgba(0, 122, 255, 0.3);
+}
+/* #endif */
 </style>

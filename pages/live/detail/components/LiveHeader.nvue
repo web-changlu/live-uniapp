@@ -1,13 +1,23 @@
 <template>
   <view class="live-info">
     <view class="anchor-info">
-      <image class="anchor-avatar" :src="anchor.avatar || '/static/images/default-avatar.png'" />
-      <text class="anchor-name">{{ anchor.name }}</text>
-      <view class="viewer-count">
-        <text class="viewer-count-text">{{ stats.viewerCount }}</text>
+      <view class="avatar-container">
+        <image class="anchor-avatar" :src="anchor.avatar || '/static/images/default-avatar.png'" />
+        <view class="live-indicator">
+          <text class="live-text">LIVE</text>
+        </view>
+      </view>
+      <view class="info-content">
+        <text class="anchor-name">{{ anchor.name }}</text>
+        <view class="viewer-count">
+          <text class="viewer-icon">👥</text>
+          <text class="viewer-count-text">{{ stats.viewerCount }}</text>
+        </view>
       </view>
     </view>
-    <text class="live-title">{{ liveInfo.title }}</text>
+    <view class="live-title-container">
+      <text class="live-title">{{ liveInfo.title || '暂无标题...' }}</text>
+    </view>
   </view>
 </template>
 
@@ -39,7 +49,7 @@ defineProps({
 /* 直播信息 */
 .live-info {
   position: absolute;
-  top: 30rpx;
+  top: 20rpx;
   left: 30rpx;
   right: 30rpx;
   flex-direction: column;
@@ -49,7 +59,18 @@ defineProps({
 .anchor-info {
   flex-direction: row;
   align-items: center;
-  margin-bottom: 10rpx;
+  background: #f6f8fb;
+  border-radius: 25rpx;
+  padding: 20rpx;
+  margin-bottom: 20rpx;
+  border: 1rpx solid #e9eef7;
+  box-shadow: 8rpx 8rpx 16rpx #e9eef7, -8rpx -8rpx 16rpx #ffffff;
+}
+
+/* 头像容器 */
+.avatar-container {
+  position: relative;
+  margin-right: 20rpx;
 }
 
 /* 主播头像 */
@@ -57,34 +78,109 @@ defineProps({
   width: 80rpx;
   height: 80rpx;
   border-radius: 40rpx;
-  margin-right: 20rpx;
+  border: 3rpx solid #e9eef7;
+}
+
+/* 直播指示器 */
+.live-indicator {
+  position: absolute;
+  bottom: -5rpx;
+  right: -5rpx;
+  background: linear-gradient(45deg, #ff3b30, #ff9500);
+  border-radius: 15rpx;
+  padding: 4rpx 8rpx;
   border: 2rpx solid #ffffff;
+}
+
+.live-text {
+  color: #ffffff;
+  font-size: 20rpx;
+  font-weight: bold;
+}
+
+/* 信息内容 */
+.info-content {
+  flex: 1;
+  flex-direction: column;
 }
 
 /* 主播名称 */
 .anchor-name {
-  color: #ffffff;
+  color: #4a5568;
   font-size: 32rpx;
   font-weight: bold;
-  margin-right: 20rpx;
+  margin-bottom: 8rpx;
+  text-shadow: 0 2rpx 4rpx #f0f0f3;
 }
 
 /* 观众数量 */
 .viewer-count {
-  border-radius: 30rpx;
-  padding: 5rpx 20rpx;
+  flex-direction: row;
+  align-items: center;
+  background: #f0f0f3;
+  border-radius: 20rpx;
+  padding: 8rpx 16rpx;
+  align-self: flex-start;
+}
+
+.viewer-icon {
+  font-size: 24rpx;
+  margin-right: 8rpx;
+  color: #6b7a90;
 }
 
 /* 观众数量文本 */
 .viewer-count-text {
-  color: #ffffff;
+  color: #6b7a90;
   font-size: 24rpx;
+  font-weight: 500;
+}
+
+/* 直播标题容器 */
+.live-title-container {
+  background: #f6f8fb;
+  border-radius: 20rpx;
+  padding: 16rpx 20rpx;
+  border: 1rpx solid #e9eef7;
+  box-shadow: 8rpx 8rpx 16rpx #e9eef7, -8rpx -8rpx 16rpx #ffffff;
 }
 
 /* 直播标题 */
 .live-title {
-  color: #ffffff;
-  font-size: 28rpx;
-  margin-top: 5rpx;
+  color: #4a5568;
+  font-size: 16rpx;
+  line-height: 40rpx;
+  text-shadow: 0 1rpx 2rpx #f0f0f3;
 }
+
+/* #ifdef APP-NVUE */
+/* NVUE特定样式 - 不支持backdrop-filter，使用替代方案 */
+.anchor-info {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.live-title-container {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+/* #endif */
+
+/* #ifdef APP-PLUS */
+/* APP-PLUS平台支持更多CSS特性 */
+.anchor-info {
+  backdrop-filter: blur(20rpx);
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+}
+
+.live-title-container {
+  backdrop-filter: blur(15rpx);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.2);
+}
+/* #endif */
+
+/* #ifdef APP-NVUE */
+.anchor-info, .live-title-container {
+  background-color: #f6f8fb;
+  border-color: #e9eef7;
+}
+/* #endif */
 </style>
