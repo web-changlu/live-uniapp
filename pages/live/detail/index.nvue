@@ -1,147 +1,84 @@
 <template>
 	<view class="page-container">
-		<view class="video-container">
-			<!-- 本地视频预览 -->
-			<view v-if="isAnchor" class="local-video">
-				<!-- TRTC的本地视频预览组件 -->
-						<!-- 直播视频区域 -->
-		 <text class="page-title">直播房间号: {{ roomId }}</text>
-		 <text class="page-title">userid: {{ userStore.userId }}</text>
-		 <trtc-local-view v-if="trtcStore.localStream.videoEnabled" :viewId="localViewId" style="height: 500rpx;"></trtc-local-view>
-				<view v-else class="placeholder-video">
-					<text class="placeholder-text">摄像头已关闭</text>
-				</view>
-			</view>
+		<!-- 视频播放区域 -->
+		<VideoPlayer
+			:isAnchor="isAnchor"
+			:localStream="trtcStore.localStream"
+			:hasRemoteStream="hasRemoteStream"
+			:localViewId="localViewId"
+			:remoteViewId="remoteViewId"
+			:remoteUserId="remoteUserId"
+		/>
 
-			<!-- 远程视频 -->
-			<view v-else class="remote-video">
-				<!-- TRTC的远程视频预览组件 -->
-				<trtc-remote-view v-if="hasRemoteStream" 
-				style="height: 400rpx;"
-				class="video-view" :viewId="remoteViewId" :userId="remoteUserId"></trtc-remote-view>
-				<view v-else class="placeholder-video">
-					<text class="placeholder-text">等待主播开播...</text>
-				</view>
-			</view>
+		<!-- 直播信息 -->
+		<LiveHeader
+			:anchor="liveStore.anchor"
+			:stats="liveStore.stats"
+			:liveInfo="liveStore.liveInfo"
+		/>
 
-			<!-- 直播信息 -->
-			<view class="live-info">
-				<view class="anchor-info">
-					<image class="anchor-avatar" :src="liveStore.anchor.avatar || '/static/images/default-avatar.png'" />
-					<text class="anchor-name">{{ liveStore.anchor.name }}</text>
-					<view class="viewer-count">
-						<text class="viewer-count-text">{{ liveStore.stats.viewerCount }}</text>
-					</view>
-				</view>
-				<text class="live-title">{{ liveStore.liveInfo.title }}</text>
-			</view>
-
-			<!-- 视频控制按钮 -->
-			<view v-if="isAnchor" class="video-controls">
-				<view class="control-button" @click="toggleVideo">
-					<text class="control-icon">{{ trtcStore.localStream.videoEnabled ? '📹' : '🚫' }}</text>
-					<text class="control-text">{{ trtcStore.localStream.videoEnabled ? '关闭摄像头' : '开启摄像头' }}</text>
-				</view>
-				<view class="control-button" @click="toggleAudio">
-					<text class="control-icon">{{ trtcStore.localStream.audioEnabled ? '🎤' : '🔇' }}</text>
-					<text class="control-text">{{ trtcStore.localStream.audioEnabled ? '关闭麦克风' : '开启麦克风' }}</text>
-				</view>
-				<view class="control-button" @click="switchCamera">
-					<text class="control-icon">🔄</text>
-					<text class="control-text">切换摄像头</text>
-				</view>
-				<view class="control-button" @click="showBeautyPanel">
-					<text class="control-icon">✨</text>
-					<text class="control-text">美颜</text>
-				</view>
-			</view>
-		</view>
+		<!-- 视频控制按钮 -->
+		<ControlPanel
+			v-if="isAnchor"
+			:localStream="trtcStore.localStream"
+			@toggle-video="toggleVideo"
+			@toggle-audio="toggleAudio"
+			@switch-camera="switchCamera"
+			@show-beauty="showBeautyPanel"
+		/>
 
 		<!-- 互动区域 -->
 		<view class="interaction-container">
 			<!-- 消息列表 -->
-			<scroll-view class="message-list" scroll-y="true" :scroll-into-view="lastMessageId">
-				<view v-for="(message, index) in liveStore.messages" :key="message.id" :id="message.id" class="message-item">
-					<text class="message-sender">{{ message.userName }}:</text>
-					<text class="message-content">{{ message.content }}</text>
-				</view>
-			</scroll-view>
+			<ChatList
+				:messages="liveStore.messages"
+				:lastMessageId="lastMessageId"
+			/>
 
 			<!-- 输入区域 -->
-			<view class="input-area">
-				<input class="message-input" v-model="messageContent" placeholder="说点什么..." @confirm="sendMessage" />
-				<button class="send-button" @click="sendMessage">发送</button>
-			</view>
+			<MessageInput @send-message="sendMessage" />
 
 			<!-- 操作按钮 -->
-			<view class="action-buttons">
-				<view class="action-button" @click="handleLike">
-					<text class="action-icon">👍</text>
-					<text class="action-text">{{ liveStore.stats.likeCount }}</text>
-				</view>
-				<view class="action-button" @click="handleShare">
-					<text class="action-icon">📤</text>
-					<text class="action-text">分享</text>
-				</view>
-				<view class="action-button" @click="handleGift">
-					<text class="action-icon">🎁</text>
-					<text class="action-text">礼物</text>
-				</view>
-				<view v-if="isAnchor" class="action-button end-live" @click="endLive">
-					<text class="action-text">结束直播</text>
-				</view>
-				<view v-else class="action-button leave-room" @click="leaveRoom">
-					<text class="action-text">离开</text>
-				</view>
-			</view>
+			<InteractionBar
+				:isAnchor="isAnchor"
+				:likeCount="liveStore.stats.likeCount"
+				@like="handleLike"
+				@share="handleShare"
+				@gift="handleGift"
+				@end-live="endLive"
+				@leave-room="leaveRoom"
+			/>
 		</view>
-	</view>
 
-	<!-- 美颜面板 -->
-	<uni-popup ref="beautyPopup" type="bottom">
-		<view class="beauty-panel">
-			<view class="beauty-panel-header">
-				<text class="beauty-panel-title">美颜设置</text>
-				<text class="beauty-panel-close" @click="hideBeautyPanel">关闭</text>
-			</view>
-			<view class="beauty-panel-content">
-				<view class="beauty-style-section">
-					<text class="beauty-section-title">美颜风格</text>
-					<view class="beauty-style-options">
-						<view
-							v-for="(option, index) in liveStore.beautyStyleOptions"
-							:key="index"
-							class="beauty-style-option"
-							:class="{'beauty-style-active': liveStore.currentBeautyStyle === option.value}"
-							@click="setBeautyStyle(option.value)">
-							<text class="beauty-style-text">{{ option.label }}</text>
-						</view>
-					</view>
-				</view>
-				<view class="beauty-level-section">
-					<text class="beauty-section-title">美颜级别: {{ liveStore.beautyLevel }}</text>
-					<slider
-						class="beauty-level-slider"
-						:value="liveStore.beautyLevel"
-						:min="0"
-						:max="9"
-						:step="1"
-						show-value
-						@change="setBeautyLevel" />
-				</view>
-				<button class="beauty-apply-btn" @click="applyBeauty">应用美颜</button>
-			</view>
-		</view>
-	</uni-popup>
+		<!-- 美颜面板 -->
+		<uni-popup ref="beautyPopup" type="bottom">
+			<BeautyPanel
+				:beautyStyleOptions="liveStore.beautyStyleOptions"
+				:currentBeautyStyle="liveStore.currentBeautyStyle"
+				:beautyLevel="liveStore.beautyLevel"
+				@close="hideBeautyPanel"
+				@style-change="setBeautyStyle"
+				@level-change="setBeautyLevel"
+				@apply="applyBeauty"
+			/>
+		</uni-popup>
+	</view>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { onLoad, onUnload, onBackPress } from '@dcloudio/uni-app';
 import permision from "@/TrtcCloud/permission.js";
-import { onLoad,onUnload,onBackPress } from '@dcloudio/uni-app';
-import { useLiveStore, useUserStore,useTrtcStore } from '@/store';
-import TrtcLocalView from '@/TrtcCloud/view/TrtcLocalView';
-import TrtcRemoteView from '@/TrtcCloud/view/TrtcRemoteView';
+import { useLiveStore, useUserStore, useTrtcStore } from '@/store';
+
+// 导入组件
+import VideoPlayer from './components/VideoPlayer.nvue';
+import LiveHeader from './components/LiveHeader.nvue';
+import ControlPanel from './components/ControlPanel.nvue';
+import ChatList from './components/ChatList.nvue';
+import MessageInput from './components/MessageInput.nvue';
+import InteractionBar from './components/InteractionBar.nvue';
+import BeautyPanel from './components/BeautyPanel.nvue';
 
 // 使用store
 const liveStore = useLiveStore();
@@ -155,10 +92,8 @@ const messageContent = ref('');
 const lastMessageId = ref('');
 
 // 视频视图ID
-// const localViewId = ref('local-video-view');
-let localViewId =  'local-video-view';
-// localViewId = userStore.userId;	
-const remoteViewId = 'remote-video-view'
+const localViewId = trtcStore.localViewId
+const remoteViewId = trtcStore.remoteViewId
 
 // 计算属性
 const isAnchor = computed(() => {
@@ -171,50 +106,35 @@ const hasRemoteStream = computed(() => {
 
 // 视频控制方法
 const toggleVideo = () => {
-	const enabled = !trtcStore.localStream.videoEnabled;
-	console.log('toggleVideo', enabled)
-	console.log('videoView', trtcStore.localStream.videoView)
-	trtcStore.toggleLocalVideo(enabled);
+	trtcStore.toggleLocalVideo();
 
 	if (enabled && !trtcStore.localStream.videoView) {
 		// 如果开启视频且没有视图，则启动本地预览
-		trtcStore.startLocalPreview(localViewId);
+		trtcStore.startLocalPreview();
 	} else if (!enabled) {
 		// 如果关闭视频，则停止本地预览
 		trtcStore.stopLocalPreview();
 	}
 };
 
-const toggleAudio =  () => {
-	 trtcStore.toggleLocalAudio(!trtcStore.localStream.audioEnabled);
+const toggleAudio = () => {
+	trtcStore.toggleLocalAudio();
 };
 
 const switchCamera = () => {
 	// 直接调用trtcStore的switchCamera方法
 	trtcStore.switchCamera();
-
-	// 显示切换提示
-	uni.showToast({
-		title: trtcStore.currentDevices.isFrontCamera ? '已切换到前置摄像头' : '已切换到后置摄像头',
-		icon: 'none',
-		duration: 1500
-	});
 };
 
 // 发送消息
-const sendMessage = () => {
-	if (!messageContent.value.trim()) return;
-
+const sendMessage = (content) => {
 	const message = liveStore.sendMessage({
 		userId: userStore.userId,
 		userName: userStore.userName,
 		userAvatar: userStore.userAvatar,
-		content: messageContent.value,
+		content: content,
 		type: 'text'
 	});
-
-	// 清空输入框
-	messageContent.value = '';
 
 	// 设置最后一条消息ID，用于滚动到底部
 	lastMessageId.value = message.id;
@@ -302,13 +222,13 @@ const endLive = () => {
 
 				try {
 					// 结束直播
-					const endRes =  liveStore.endLive();
-					if(!endRes.success){
+					const endRes = liveStore.endLive();
+					if (!endRes.success) {
 						uni.showToast({
-							title: error.message || '直播结束直播失败',
+							title: endRes.error || '直播结束直播失败',
 							icon: 'none'
 						});
-						return
+						return;
 					}
 					// 销毁TRTC
 					trtcStore.destroyTrtc();
@@ -342,13 +262,13 @@ const leaveRoom = () => {
 
 	try {
 		// 离开直播间
-		const leaveRes =  liveStore.leaveLiveRoom(userStore.userId);
-		if(!leaveRes.success){
+		const leaveRes = liveStore.leaveLiveRoom(userStore.userId);
+		if (!leaveRes.success) {
 			uni.showToast({
-				title: error.message || '观众离开直播间失败',
+				title: leaveRes.error || '观众离开直播间失败',
 				icon: 'none'
 			});
-			return
+			return;
 		}
 		// 销毁TRTC
 		trtcStore.destroyTrtc();
@@ -369,6 +289,7 @@ const leaveRoom = () => {
 		});
 	}
 };
+
 // 加入房间
 const joinRoom = () => {
 	if (!roomId.value) return;
@@ -379,10 +300,8 @@ const joinRoom = () => {
 	});
 
 	try {
-		
-
 		// 加入直播间
-		const joinRes =  liveStore.joinLiveRoom(roomId.value, {
+		const joinRes = liveStore.joinLiveRoom(roomId.value, {
 			userId: userStore.userId,
 			userName: userStore.userInfo.userName,
 			userAvatar: userStore.userInfo.userAvatar,
@@ -391,7 +310,8 @@ const joinRoom = () => {
 			remoteUserId: remoteUserId.value,
 			remoteViewId
 		});
-		if(!joinRes.success) {
+
+		if (!joinRes.success) {
 			console.warn('观众加入房间失败', joinRes.error);
 			uni.showToast({
 				title: joinRes.error || '加入房间失败',
@@ -415,53 +335,57 @@ const joinRoom = () => {
 		uni.navigateBack();
 	}
 };
+
 const checkPermission = () => {
 	if (uni.getSystemInfoSync().platform === 'android') {
 		permision.requestAndroidPermission('android.permission.RECORD_AUDIO');
 		permision.requestAndroidPermission('android.permission.CAMERA');
 	}
-}
+};
+
 onLoad((option) => {
-	console.log('onLoad触发----->', JSON.stringify(option) );
-	checkPermission()
-	console.log('option', JSON.stringify(option) );
+	console.log('onLoad触发----->', JSON.stringify(option), 'isAnchor', isAnchor.value);
+	checkPermission();
+	console.log('option', JSON.stringify(option));
 	if (option && option.roomId) {
 		roomId.value = option.roomId;
 	}
-	if(option && option.remoteUserId) {
+	if (option && option.remoteUserId) {
 		remoteUserId.value = option.remoteUserId;
 	}
-	if (roomId.value) {
-		// 如果是主播，初始化本地预览
-		if (userStore.userId === liveStore.anchor.id) {
-			console.log(roomId.value,'开始直播');
-			const liveRes =  liveStore.startLive()
-			if(!liveRes.success) {
-				console.warn('开始直播失败', liveRes.error);
-				uni.showToast({
-					title: liveRes.error || '开始直播失败',
-					icon: 'none'
-				}); 
-			}
-		} else {
-			// 如果是观众，加入房间
-			joinRoom();
-		}
-	} else {
+	if(!roomId.value) {
 		uni.showToast({
 			title: '房间ID不存在',
 			icon: 'none'
 		});
 		uni.navigateBack();
 	}
-})
-
-onMounted(() => {
-	console.log('onMounted触发-----' );
+	// #ifdef APP-PLUS
+	// 如果是主播，初始化本地预览
+	if (userStore.userId === liveStore.anchor.id) {
+		console.log(roomId.value, '开始直播');
+		
+		const liveRes = liveStore.startLive();
+		if (!liveRes.success) {
+			console.warn('开始直播失败', liveRes.error);
+			uni.showToast({
+				title: liveRes.error || '开始直播失败',
+				icon: 'none'
+			}); 
+		}
+	} else {
+		// 如果是观众，加入房间
+		joinRoom();
+	}
+	// #endif
 });
 
+onMounted(() => {
+	console.log('onMounted触发-----');
+});
 
 const destoryHandle = () => {
+	// #ifdef APP-PLUS
 	// 如果是主播，结束直播
 	if (isAnchor.value && liveStore.liveStatus === 'live') {
 		endLive();
@@ -471,15 +395,18 @@ const destoryHandle = () => {
 	if (!isAnchor.value) {
 		liveStore.leaveLiveRoom(userStore.userId);
 	}
-}
+	// #endif
+};
+
 onUnload(() => {
-	console.log('-----onUnload触发-----' );
+	console.log('-----onUnload触发-----');
 	destoryHandle();
-})
+});
+
 onBackPress(() => {
-	console.log('-----onBackPress触发-----' );
+	console.log('-----onBackPress触发-----');
 	destoryHandle();
-})
+});
 
 // 美颜面板引用
 const beautyPopup = ref(null);
@@ -502,9 +429,9 @@ const setBeautyStyle = (styleValue) => {
 };
 
 // 设置美颜级别
-const setBeautyLevel = (e) => {
+const setBeautyLevel = (value) => {
 	liveStore.$patch({
-		beautyLevel: e.detail.value
+		beautyLevel: value
 	});
 };
 
@@ -531,129 +458,8 @@ const applyBeauty = () => {
 .page-container {
 	flex: 1;
 	flex-direction: column;
-	/* background-color: #1a1a1a; */
 	width: 750rpx;
 	padding-top: 60rpx;
-}
-
-/* 视频容器 */
-.video-container {
-	position: relative;
-	width: 750rpx;
-	height: 900rpx;
-	background-color: rgb(28, 194, 206);
-}
-
-/* 本地视频和远程视频 */
-.local-video, .remote-video {
-	width: 750rpx;
-	height: 900rpx;
-}
-
-/* 视频视图 */
-.video-view {
-	width: 750rpx;
-	height: 400rpx;
-	flex: 1;
-}
-
-/* 占位视频 */
-.placeholder-video {
-	width: 750rpx;
-	height: 450rpx;
-	justify-content: center;
-	align-items: center;
-	background-color: #333333;
-}
-
-/* 占位文本 */
-.placeholder-text {
-	color: #ffffff;
-	font-size: 32rpx;
-}
-
-/* 直播信息 */
-.live-info {
-	position: absolute;
-	top: 30rpx;
-	left: 30rpx;
-	right: 30rpx;
-	flex-direction: column;
-}
-
-/* 主播信息 */
-.anchor-info {
-	flex-direction: row;
-	align-items: center;
-	margin-bottom: 10rpx;
-}
-
-/* 主播头像 */
-.anchor-avatar {
-	width: 80rpx;
-	height: 80rpx;
-	border-radius: 40rpx;
-	margin-right: 20rpx;
-	border: 2rpx solid #ffffff;
-}
-
-/* 主播名称 */
-.anchor-name {
-	color: #ffffff;
-	font-size: 32rpx;
-	font-weight: bold;
-	margin-right: 20rpx;
-}
-
-/* 观众数量 */
-.viewer-count {
-	/* background-color: rgba(0, 0, 0, 0.5); */
-	border-radius: 30rpx;
-	padding: 5rpx 20rpx;
-}
-
-/* 观众数量文本 */
-.viewer-count-text {
-	color: #ffffff;
-	font-size: 24rpx;
-}
-
-/* 直播标题 */
-.live-title {
-	color: #ffffff;
-	font-size: 28rpx;
-	margin-top: 5rpx;
-}
-
-/* 视频控制按钮 */
-.video-controls {
-	position: absolute;
-	bottom: 20rpx;
-	left: 30rpx;
-	right: 30rpx;
-	flex-direction: row;
-	justify-content: space-around;
-}
-
-/* 控制按钮 */
-.control-button {
-	background-color: rgba(0, 0, 0, 0.5);
-	border-radius: 10rpx;
-	padding: 10rpx 20rpx;
-	flex-direction: column;
-	align-items: center;
-}
-
-/* 控制图标 */
-.control-icon {
-	font-size: 40rpx;
-	margin-bottom: 5rpx;
-}
-
-/* 控制文本 */
-.control-text {
-	color: #ffffff;
-	font-size: 24rpx;
 }
 
 /* 互动容器 */
@@ -662,180 +468,5 @@ const applyBeauty = () => {
 	flex-direction: column;
 	padding: 20rpx;
 	background-color: #1a1a1a;
-}
-
-/* 消息列表 */
-.message-list {
-	flex: 1;
-	height: 250rpx;
-	margin-bottom: 20rpx;
-}
-
-/* 消息项 */
-.message-item {
-	flex-direction: row;
-	margin-bottom: 15rpx;
-	flex-wrap: wrap;
-}
-
-/* 消息发送者 */
-.message-sender {
-	color: #ffcc00;
-	font-size: 28rpx;
-	margin-right: 10rpx;
-}
-
-/* 消息内容 */
-.message-content {
-	color: #ffffff;
-	font-size: 28rpx;
-	flex: 1;
-}
-
-/* 输入区域 */
-.input-area {
-	flex-direction: row;
-	align-items: center;
-	margin-bottom: 20rpx;
-}
-
-/* 消息输入框 */
-.message-input {
-	flex: 1;
-	background-color: #333333;
-	border-radius: 40rpx;
-	padding: 15rpx 30rpx;
-	color: #ffffff;
-	font-size: 28rpx;
-	margin-right: 20rpx;
-	height: 80rpx;
-}
-
-/* 发送按钮 */
-.send-button {
-	background-color: #007aff;
-	color: #ffffff;
-	border-radius: 40rpx;
-	width: 120rpx;
-	height: 80rpx;
-	line-height: 80rpx;
-	text-align: center;
-	font-size: 28rpx;
-}
-
-/* 操作按钮 */
-.action-buttons {
-	flex-direction: row;
-	justify-content: space-around;
-	padding: 20rpx 0;
-}
-
-/* 操作按钮项 */
-.action-button {
-	flex-direction: column;
-	align-items: center;
-}
-
-/* 操作图标 */
-.action-icon {
-	font-size: 40rpx;
-	margin-bottom: 10rpx;
-}
-
-/* 操作文本 */
-.action-text {
-	color: #ffffff;
-	font-size: 24rpx;
-}
-
-/* 结束直播按钮 */
-.end-live {
-	width: 200rpx;
-	height: 60rpx;
-	border-radius: 40rpx;
-	padding: 10rpx 30rpx;
-	line-height: 60rpx;
-	background-color: #ff3b30;
-}
-
-/* 离开房间按钮 */
-.leave-room {
-	background-color: #ff9500;
-	border-radius: 40rpx;
-	padding: 10rpx 30rpx;
-}
-
-/* 美颜面板样式 */
-.beauty-panel {
-	background-color: #2c2c2c;
-	border-radius: 20rpx 20rpx 0 0;
-	padding: 30rpx;
-	width: 750rpx;
-}
-
-.beauty-panel-header {
-	flex-direction: row;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 30rpx;
-}
-
-.beauty-panel-title {
-	color: #ffffff;
-	font-size: 32rpx;
-	font-weight: bold;
-}
-
-.beauty-panel-close {
-	color: #007aff;
-	font-size: 28rpx;
-}
-
-.beauty-panel-content {
-	flex-direction: column;
-}
-
-.beauty-style-section, .beauty-level-section {
-	margin-bottom: 30rpx;
-}
-
-.beauty-section-title {
-	color: #ffffff;
-	font-size: 28rpx;
-	margin-bottom: 20rpx;
-}
-
-.beauty-style-options {
-	flex-direction: row;
-	justify-content: space-around;
-	margin-bottom: 20rpx;
-}
-
-.beauty-style-option {
-	background-color: #3a3a3a;
-	padding: 15rpx 30rpx;
-	border-radius: 10rpx;
-}
-
-.beauty-style-active {
-	background-color: #007aff;
-}
-
-.beauty-style-text {
-	color: #ffffff;
-	font-size: 26rpx;
-}
-
-.beauty-level-slider {
-	margin: 20rpx 0;
-}
-
-.beauty-apply-btn {
-	background-color: #007aff;
-	color: #ffffff;
-	height: 80rpx;
-	line-height: 80rpx;
-	border-radius: 40rpx;
-	margin-top: 20rpx;
 }
 </style>

@@ -6,6 +6,13 @@
   "dependencies": {
     "pinia": "^3.0.2"
   },
+  "uni_modules": {
+    "dependencies": [
+      "uni-ui",
+      "uni-popup",
+      "uni-icons"
+    ]
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -1,0 +1,90 @@
+<template>
+  <view class="live-info">
+    <view class="anchor-info">
+      <image class="anchor-avatar" :src="anchor.avatar || '/static/images/default-avatar.png'" />
+      <text class="anchor-name">{{ anchor.name }}</text>
+      <view class="viewer-count">
+        <text class="viewer-count-text">{{ stats.viewerCount }}</text>
+      </view>
+    </view>
+    <text class="live-title">{{ liveInfo.title }}</text>
+  </view>
+</template>
+
+<script setup>
+defineProps({
+  anchor: {
+    type: Object,
+    default: () => ({
+      avatar: '',
+      name: '主播'
+    })
+  },
+  stats: {
+    type: Object,
+    default: () => ({
+      viewerCount: 0
+    })
+  },
+  liveInfo: {
+    type: Object,
+    default: () => ({
+      title: '精彩直播'
+    })
+  }
+});
+</script>
+
+<style>
+/* 直播信息 */
+.live-info {
+  position: absolute;
+  top: 30rpx;
+  left: 30rpx;
+  right: 30rpx;
+  flex-direction: column;
+}
+
+/* 主播信息 */
+.anchor-info {
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+
+/* 主播头像 */
+.anchor-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  margin-right: 20rpx;
+  border: 2rpx solid #ffffff;
+}
+
+/* 主播名称 */
+.anchor-name {
+  color: #ffffff;
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-right: 20rpx;
+}
+
+/* 观众数量 */
+.viewer-count {
+  border-radius: 30rpx;
+  padding: 5rpx 20rpx;
+}
+
+/* 观众数量文本 */
+.viewer-count-text {
+  color: #ffffff;
+  font-size: 24rpx;
+}
+
+/* 直播标题 */
+.live-title {
+  color: #ffffff;
+  font-size: 28rpx;
+  margin-top: 5rpx;
+}
+</style>

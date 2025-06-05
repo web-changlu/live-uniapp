@@ -10,6 +10,11 @@
 # 依赖包
 /node_modules/
 
+# 忽略所有uni_modules
+/uni_modules/
+# 但不忽略自定义模块
+!/uni_modules/your-custom-module/
+
 # 本地环境文件
 .env.local
 .env.*.local

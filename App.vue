@@ -3,7 +3,7 @@
 // 首先需要通过 uni.requireNativePlugin("ModuleName") 获取 module 
 export default {
   onLaunch() {
-    const projectName = 'uniappApiExampleExt';
+    const projectName = 'live-uniapp';
     // uni.$aegis = new Aegis({
     //   id: 'iHWefAYqWuCkDjhucc',
     //   spa: true,

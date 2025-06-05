@@ -1,7 +1,21 @@
 // store/modules/trtc.js
 import { defineStore } from 'pinia'
-import TrtcCloud from '@/TrtcCloud/lib/index';
+
+// #ifdef APP-PLUS
+
+import TrtcCloud as TRTC_SDK from '@/TrtcCloud/lib/index';
+
+// #endif
+
 import { TRTCAppScene, TRTCRoleType, TRTCVideoStreamType } from '@/TrtcCloud/lib/TrtcDefines';
+
+let TrtcCloud = null
+
+// #ifdef APP-PLUS
+
+TrtcCloud = TRTC_SDK
+
+// #endif
 
 export const useTrtcStore = defineStore('trtc', {
   state: () => ({
@@ -31,7 +45,9 @@ export const useTrtcStore = defineStore('trtc', {
     // 错误信息
     error: null,
     // 加载状态
-    loading: false
+    loading: false,
+    localViewId: 'local-video-view',
+    remoteViewId: 'remote-video-view',
   }),
 
   getters: {
@@ -54,30 +70,33 @@ export const useTrtcStore = defineStore('trtc', {
   actions: {
     // 初始化TRTC
     initTrtc() {
-      try {
-        this.loading = true
-        this.error = null
+      // #ifdef APP-PLUS
+        try {
+          this.loading = true
+          this.error = null
 
-        // 初始化TRTC实例
-        if (!this.trtcCloud) {
-          // 在uni-app中获取TRTC插件实例
-          this.trtcCloud = TrtcCloud.createInstance()
-          this.handleEvents();
+          // 初始化TRTC实例
+          if (!this.trtcCloud) {
+            // 在uni-app中获取TRTC插件实例
+              this.trtcCloud = TrtcCloud.createInstance()
+            
+              this.handleEvents();
+          }
+          console.log('TRTC实例初始化成功')
+          return {
+            success: true
+          }
+        } catch (error) {
+          this.error = error.message || 'TRTC初始化失败'
+          console.error('error:',this.error);
+          return {
+            success: false,
+            error: this.error
+          }
+        } finally {
+          this.loading = false
         }
-        console.log('TRTC实例初始化成功')
-        return {
-          success: true
-        }
-      } catch (error) {
-        this.error = error.message || 'TRTC初始化失败'
-        console.error('error:',this.error);
-        return {
-          success: false,
-          error: this.error
-        }
-      } finally {
-        this.loading = false
-      }
+      // #endif
     },
     checkInstance() {
       if (!this.trtcCloud) {
@@ -144,7 +163,7 @@ export const useTrtcStore = defineStore('trtc', {
       this.trtcCloud.off('*');
     },
     // 创建本地预览
-    startLocalPreview(viewId) {
+    startLocalPreview() {
       try {
         this.loading = true
         this.error = null
@@ -155,10 +174,10 @@ export const useTrtcStore = defineStore('trtc', {
 
         // 开启本地预览
         console.log('开启本地预览') 
-        this.trtcCloud.startLocalPreview(true, viewId)
+        this.trtcCloud.startLocalPreview(true, this.localViewId)
         this.trtcCloud.startLocalAudio();
         // 保存视图ID
-        this.localStream.videoView = viewId
+        this.localStream.videoView = this.localViewId
 
         return {
           success: true
@@ -302,7 +321,7 @@ export const useTrtcStore = defineStore('trtc', {
       this.trtcCloud.setBeautyStyle(style);
     },
     // 开启/关闭本地视频
-    toggleLocalVideo(enabled) {
+    toggleLocalVideo() {
       try {
         this.loading = true
         this.error = null
@@ -310,12 +329,15 @@ export const useTrtcStore = defineStore('trtc', {
         if (!this.trtcCloud) {
           this.initTrtc()
         }
-        
+        const enabled = !trtcStore.localStream.videoEnabled;
         // 使用TRTC API开启/关闭本地视频
-        this.trtcCloud.muteLocalVideo(TRTCVideoStreamType.TRTCVideoStreamTypeBig, !enabled)
+        this.trtcCloud.muteLocalVideo(TRTCVideoStreamType.TRTCVideoStreamTypeBig, enabled)
 
         // 更新本地流状态
         this.localStream.videoEnabled = enabled
+        if(enabled && !this.localStream.videoView){
+          this.startLocalPreview()
+        }
         return {
           success: true
         }
@@ -332,7 +354,7 @@ export const useTrtcStore = defineStore('trtc', {
     },
 
     // 开启/关闭本地音频
-    toggleLocalAudio(enabled) {
+    toggleLocalAudio() {
       try {
         this.loading = true
         this.error = null
@@ -340,11 +362,11 @@ export const useTrtcStore = defineStore('trtc', {
         if (!this.trtcCloud) {
           this.initTrtc()
         }
-
+        const audioEnabled = !this.localStream.audioEnabled
         // 使用TRTC API开启/关闭本地音频
-        this.trtcCloud.muteLocalAudio(!enabled)
+        this.trtcCloud.muteLocalAudio(!audioEnabled)
         // 更新本地流状态
-        this.localStream.audioEnabled = enabled
+        this.localStream.audioEnabled = audioEnabled
         return {
           success: true
         }
@@ -402,7 +424,12 @@ export const useTrtcStore = defineStore('trtc', {
 
         // 更新当前摄像头状态
         this.currentDevices.isFrontCamera = isFrontCamera
-
+        // 显示切换提示
+        uni.showToast({
+          title: isFrontCamera ? '已切换到前置摄像头' : '已切换到后置摄像头',
+          icon: 'none',
+          duration: 1500
+        });
         return {
           success: true
         }
@@ -599,7 +626,7 @@ export const useTrtcStore = defineStore('trtc', {
 
         // 开启本地预览和音频
         if (options.viewId) {
-          const localViewRes = this.startLocalPreview(options.viewId);
+          const localViewRes = this.startLocalPreview();
           if(localViewRes.success) {
             uni.showToast({
               title: '本地预览启动成功',
@@ -648,8 +675,8 @@ export const useTrtcStore = defineStore('trtc', {
         }
 
         // 如果提供了远程用户ID和视图ID，开始预览远程流
-        if (options.remoteUserId && options.remoteViewId) {
-          this.startRemoteStreamPreview(options.remoteUserId, options.remoteViewId);
+        if (options.remoteUserId) {
+          this.startRemoteStreamPreview(options.remoteUserId, this.remoteViewId);
         }
 
         return {

@@ -1,0 +1,98 @@
+<template>
+  <view class="video-container">
+    <!-- 本地视频预览 -->
+    <view v-if="isAnchor" class="local-video">
+      <trtc-local-view v-if="localStream.videoEnabled" :viewId="localViewId" class="video-view"></trtc-local-view>
+      <view v-else class="placeholder-video">
+        <text class="placeholder-text">摄像头已关闭</text>
+      </view>
+    </view>
+
+    <!-- 远程视频 -->
+    <view v-else class="remote-video">
+      <trtc-remote-view 
+        v-if="hasRemoteStream" 
+        class="video-view" 
+        :viewId="remoteViewId" 
+        :userId="remoteUserId">
+      </trtc-remote-view>
+      <view v-else class="placeholder-video">
+        <text class="placeholder-text">等待主播开播...</text>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script setup>
+import TrtcLocalView from '@/TrtcCloud/view/TrtcLocalView';
+import TrtcRemoteView from '@/TrtcCloud/view/TrtcRemoteView';
+
+defineProps({
+  isAnchor: {
+    type: Boolean,
+    default: false
+  },
+  localStream: {
+    type: Object,
+    default: () => ({
+      videoEnabled: false,
+      audioEnabled: false,
+      videoView: null
+    })
+  },
+  hasRemoteStream: {
+    type: Boolean,
+    default: false
+  },
+  localViewId: {
+    type: String,
+    default: 'local-video-view'
+  },
+  remoteViewId: {
+    type: String,
+    default: 'remote-video-view'
+  },
+  remoteUserId: {
+    type: String,
+    default: ''
+  }
+});
+</script>
+
+<style>
+/* 视频容器 */
+.video-container {
+  position: relative;
+  width: 750rpx;
+  height: 900rpx;
+  background-color: rgb(28, 194, 206);
+}
+
+/* 本地视频和远程视频 */
+.local-video, .remote-video {
+  width: 750rpx;
+  height: 900rpx;
+}
+
+/* 视频视图 */
+.video-view {
+  width: 750rpx;
+  height: 900rpx;
+  flex: 1;
+}
+
+/* 占位视频 */
+.placeholder-video {
+  width: 750rpx;
+  height: 900rpx;
+  justify-content: center;
+  align-items: center;
+  background-color: #333333;
+}
+
+/* 占位文本 */
+.placeholder-text {
+  color: #ffffff;
+  font-size: 32rpx;
+}
+</style>

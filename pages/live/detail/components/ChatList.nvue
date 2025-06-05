@@ -1,0 +1,51 @@
+<template>
+  <scroll-view class="message-list" scroll-y="true" :scroll-into-view="lastMessageId">
+    <view v-for="(message, index) in messages" :key="message.id" :id="message.id" class="message-item">
+      <text class="message-sender">{{ message.userName }}:</text>
+      <text class="message-content">{{ message.content }}</text>
+    </view>
+  </scroll-view>
+</template>
+
+<script setup>
+defineProps({
+  messages: {
+    type: Array,
+    default: () => []
+  },
+  lastMessageId: {
+    type: String,
+    default: ''
+  }
+});
+</script>
+
+<style>
+/* 消息列表 */
+.message-list {
+  flex: 1;
+  height: 250rpx;
+  margin-bottom: 20rpx;
+}
+
+/* 消息项 */
+.message-item {
+  flex-direction: row;
+  margin-bottom: 15rpx;
+  flex-wrap: wrap;
+}
+
+/* 消息发送者 */
+.message-sender {
+  color: #ffcc00;
+  font-size: 28rpx;
+  margin-right: 10rpx;
+}
+
+/* 消息内容 */
+.message-content {
+  color: #ffffff;
+  font-size: 28rpx;
+  flex: 1;
+}
+</style>

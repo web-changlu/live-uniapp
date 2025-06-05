@@ -1,0 +1,53 @@
+<template>
+  <view class="input-area">
+    <input class="message-input" v-model="inputContent" placeholder="说点什么..." @confirm="handleSend" />
+    <button class="send-button" @click="handleSend">发送</button>
+  </view>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+
+const emit = defineEmits(['send-message']);
+const inputContent = ref('');
+
+const handleSend = () => {
+  if (!inputContent.value.trim()) return;
+  
+  emit('send-message', inputContent.value);
+  inputContent.value = '';
+};
+</script>
+
+<style>
+/* 输入区域 */
+.input-area {
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+/* 消息输入框 */
+.message-input {
+  flex: 1;
+  background-color: #333333;
+  border-radius: 40rpx;
+  padding: 15rpx 30rpx;
+  color: #ffffff;
+  font-size: 28rpx;
+  margin-right: 20rpx;
+  height: 80rpx;
+}
+
+/* 发送按钮 */
+.send-button {
+  background-color: #007aff;
+  color: #ffffff;
+  border-radius: 40rpx;
+  width: 120rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  font-size: 28rpx;
+}
+</style>

@@ -2,7 +2,7 @@
 import { defineStore } from 'pinia'
 import { useTrtcStore } from '@/store/modules/trtc';
 import { useUserStore } from '@/store/modules/user';
-import { TRTCAppScene, TRTCRoleType, TRTCVideoStreamType } from '@/TrtcCloud/lib/TrtcDefines';
+import { TRTCAppScene, TRTCRoleType, TRTCVideoStreamType, TRTCBeautyStyle } from '@/TrtcCloud/lib/TrtcDefines';
 
 export const useLiveStore = defineStore('live', {
   state: () => ({
@@ -140,8 +140,7 @@ export const useLiveStore = defineStore('live', {
           roomId: this.liveInfo.id,
           userId: this.anchor.id,
           userSig: userStore.userInfo.userSig,
-          sdkAppId: userStore.userInfo.sdkAppId,
-          viewId: 'local-video-view'
+          sdkAppId: userStore.userInfo.sdkAppId
         });
 
         if (!joinResult.success) {

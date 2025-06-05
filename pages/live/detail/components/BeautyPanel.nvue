@@ -1,0 +1,146 @@
+<template>
+  <view class="beauty-panel">
+    <view class="beauty-panel-header">
+      <text class="beauty-panel-title">美颜设置</text>
+      <text class="beauty-panel-close" @click="handleClose">关闭</text>
+    </view>
+    <view class="beauty-panel-content">
+      <view class="beauty-style-section">
+        <text class="beauty-section-title">美颜风格</text>
+        <view class="beauty-style-options">
+          <view
+            v-for="(option, index) in beautyStyleOptions"
+            :key="index"
+            class="beauty-style-option"
+            :class="{'beauty-style-active': currentBeautyStyle === option.value}"
+            @click="handleStyleChange(option.value)">
+            <text class="beauty-style-text">{{ option.label }}</text>
+          </view>
+        </view>
+      </view>
+      <view class="beauty-level-section">
+        <text class="beauty-section-title">美颜级别: {{ beautyLevel }}</text>
+        <slider
+          class="beauty-level-slider"
+          :value="beautyLevel"
+          :min="0"
+          :max="9"
+          :step="1"
+          show-value
+          @change="handleLevelChange" />
+      </view>
+      <button class="beauty-apply-btn" @click="handleApply">应用美颜</button>
+    </view>
+  </view>
+</template>
+
+<script setup>
+defineProps({
+  beautyStyleOptions: {
+    type: Array,
+    default: () => []
+  },
+  currentBeautyStyle: {
+    type: Number,
+    default: 0
+  },
+  beautyLevel: {
+    type: Number,
+    default: 5
+  }
+});
+
+const emit = defineEmits(['close', 'style-change', 'level-change', 'apply']);
+
+const handleClose = () => {
+  emit('close');
+};
+
+const handleStyleChange = (styleValue) => {
+  emit('style-change', styleValue);
+};
+
+const handleLevelChange = (e) => {
+  emit('level-change', e.detail.value);
+};
+
+const handleApply = () => {
+  emit('apply');
+};
+</script>
+
+<style>
+/* 美颜面板样式 */
+.beauty-panel {
+  background-color: #2c2c2c;
+  border-radius: 20rpx 20rpx 0 0;
+  padding: 30rpx;
+  width: 750rpx;
+}
+
+.beauty-panel-header {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.beauty-panel-title {
+  color: #ffffff;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.beauty-panel-close {
+  color: #007aff;
+  font-size: 28rpx;
+}
+
+.beauty-panel-content {
+  flex-direction: column;
+}
+
+.beauty-style-section, .beauty-level-section {
+  margin-bottom: 30rpx;
+}
+
+.beauty-section-title {
+  color: #ffffff;
+  font-size: 28rpx;
+  margin-bottom: 20rpx;
+}
+
+.beauty-style-options {
+  flex-direction: row;
+  justify-content: space-around;
+  margin-bottom: 20rpx;
+}
+
+.beauty-style-option {
+  background-color: #3a3a3a;
+  padding: 15rpx 30rpx;
+  border-radius: 10rpx;
+}
+
+.beauty-style-active {
+  background-color: #007aff;
+}
+
+.beauty-style-text {
+  color: #ffffff;
+  font-size: 26rpx;
+}
+
+.beauty-level-slider {
+  margin: 20rpx 0;
+}
+
+.beauty-apply-btn {
+  background-color: #007aff;
+  color: #ffffff;
+  height: 80rpx;
+  line-height: 80rpx;
+  border-radius: 40rpx;
+  margin-top: 20rpx;
+}
+</style>
