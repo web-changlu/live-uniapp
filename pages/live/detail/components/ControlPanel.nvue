@@ -1,16 +1,34 @@
 <template>
   <view class="video-controls">
-    <view class="control-button" :class="{ 'active': !localStream.videoEnabled }" @click="toggleVideo">
-      <text class="control-icon">{{ localStream.videoEnabled ? '📹' : '🚫' }}</text>
+    <!-- 视频控制按钮 -->
+    <view class="control-row">
+      <view class="control-button" :class="{ 'active': !localStream.videoEnabled }" @click="toggleVideo">
+        <text class="control-icon">{{ localStream.videoEnabled ? '📹' : '🚫' }}</text>
+      </view>
+      <view class="control-button" :class="{ 'active': !localStream.audioEnabled }" @click="toggleAudio">
+        <text class="control-icon">{{ localStream.audioEnabled ? '🎤' : '🔇' }}</text>
+      </view>
+      <view class="control-button" @click="switchCamera">
+        <text class="control-icon">🔄</text>
+      </view>
+      <view class="control-button" @click="showBeauty">
+        <text class="control-icon">✨</text>
+      </view>
+      <view class="interaction-button" @click="handleLike">
+        <text class="interaction-icon interaction-count">👍</text>
+        <text class="interaction-count">{{ likeCount }}</text>
+      </view>
+      <view class="interaction-button" @click="handleShare">
+        <text class="interaction-icon">📤</text>
+      </view>
+      <view class="interaction-button" @click="handleGift">
+        <text class="interaction-icon">🎁</text>
+      </view>
     </view>
-    <view class="control-button" :class="{ 'active': !localStream.audioEnabled }" @click="toggleAudio">
-      <text class="control-icon">{{ localStream.audioEnabled ? '🎤' : '🔇' }}</text>
-    </view>
-    <view class="control-button" @click="switchCamera">
-      <text class="control-icon">🔄</text>
-    </view>
-    <view class="control-button" @click="showBeauty">
-      <text class="control-icon">✨</text>
+
+    <!-- 互动功能按钮 -->
+    <view class="interaction-row">
+      
     </view>
   </view>
 </template>
@@ -23,10 +41,22 @@ defineProps({
       videoEnabled: false,
       audioEnabled: false
     })
+  },
+  likeCount: {
+    type: Number,
+    default: 0
   }
 });
 
-const emit = defineEmits(['toggle-video', 'toggle-audio', 'switch-camera', 'show-beauty']);
+const emit = defineEmits([
+  'toggle-video',
+  'toggle-audio',
+  'switch-camera',
+  'show-beauty',
+  'like',
+  'share',
+  'gift'
+]);
 
 const toggleVideo = () => {
   emit('toggle-video');
@@ -43,18 +73,36 @@ const switchCamera = () => {
 const showBeauty = () => {
   emit('show-beauty');
 };
+
+const handleLike = () => {
+  emit('like');
+};
+
+const handleShare = () => {
+  emit('share');
+};
+
+const handleGift = () => {
+  emit('gift');
+};
 </script>
 
 <style>
-/* 视频控制按钮 */
+/* 视频控制按钮容器 */
 .video-controls {
   position: absolute;
   top: 260rpx;
   left: 30rpx;
   right: 30rpx;
+  flex-direction: column;
+  z-index: 10;
+}
+
+/* 控制按钮行 */
+.control-row {
   flex-direction: row;
   justify-content: space-around;
-  z-index: 10;
+  margin-bottom: 30rpx;
 }
 
 /* 控制按钮 - 新拟态风格 */
@@ -80,6 +128,39 @@ const showBeauty = () => {
   color: #4a5568;
 }
 
+/* 互动按钮 */
+.interaction-button {
+  width: 60rpx;
+  height: 60rpx;
+  background-color: #ffffff;
+  border-radius: 16rpx;
+  justify-content: center;
+  align-items: center;
+  border: 1rpx solid #e9eef7;
+  box-shadow: 4rpx 4rpx 8rpx #e9eef7, -4rpx -4rpx 8rpx #ffffff;
+  flex-direction: column;
+}
+
+/* 互动图标 */
+.interaction-icon {
+  font-size: 24rpx;
+  color: #4a5568;
+  margin-bottom: 4rpx;
+}
+
+/* 互动文本 */
+.interaction-text {
+  font-size: 18rpx;
+  color: #6b7a90;
+}
+
+/* 互动计数 */
+.interaction-count {
+  font-size: 18rpx;
+  color: #007aff;
+  font-weight: bold;
+}
+
 /* #ifdef APP-NVUE */
 /* 为NVUE平台添加特定样式 - 简化版新拟态 */
 .control-button {
@@ -94,9 +175,16 @@ const showBeauty = () => {
   border-color: #d1d9e6;
 }
 
-.control-button:active {
-  transform: scale(0.98);
-  opacity: 0.9;
+.interaction-button {
+  background-color: #ffffff;
+  border-width: 1rpx;
+  border-color: #e9eef7;
+  border-style: solid;
+}
+
+.control-button:active, .interaction-button:active {
+  transform: scale(0.95);
+  opacity: 0.8;
 }
 /* #endif */
 
@@ -114,6 +202,12 @@ const showBeauty = () => {
     inset -2rpx -2rpx 4rpx #ffffff;
 }
 
+.interaction-button {
+  box-shadow:
+    4rpx 4rpx 8rpx #e9eef7,
+    -4rpx -4rpx 8rpx #ffffff;
+}
+
 .control-button:hover {
   transform: translateY(-1rpx);
   box-shadow:
@@ -126,6 +220,20 @@ const showBeauty = () => {
   box-shadow:
     3rpx 3rpx 6rpx #e9eef7,
     -3rpx -3rpx 6rpx #ffffff;
+}
+
+.interaction-button:hover {
+  transform: translateY(-1rpx);
+  box-shadow:
+    6rpx 6rpx 12rpx #e9eef7,
+    -6rpx -6rpx 12rpx #ffffff;
+}
+
+.interaction-button:active {
+  transform: translateY(0.5rpx);
+  box-shadow:
+    2rpx 2rpx 4rpx #e9eef7,
+    -2rpx -2rpx 4rpx #ffffff;
 }
 /* #endif */
 </style>

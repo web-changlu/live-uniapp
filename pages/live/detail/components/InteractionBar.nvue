@@ -1,27 +1,5 @@
 <template>
   <view class="action-container">
-    <view class="action-buttons">
-      <view class="action-button" @click="handleLike">
-        <view class="action-icon-wrapper like">
-          <text class="action-icon">👍</text>
-          <view class="ripple-effect"></view>
-        </view>
-        <text class="action-text">{{ likeCount }}</text>
-      </view>
-      <view class="action-button" @click="handleShare">
-        <view class="action-icon-wrapper share">
-          <text class="action-icon">📤</text>
-        </view>
-        <text class="action-text">分享</text>
-      </view>
-      <view class="action-button" @click="handleGift">
-        <view class="action-icon-wrapper gift">
-          <text class="action-icon">🎁</text>
-        </view>
-        <text class="action-text">礼物</text>
-      </view>
-    </view>
-
     <view class="control-buttons">
       <view v-if="isAnchor" class="end-live" @click="handleEndLive">
         <view class="button-content">
@@ -44,26 +22,10 @@ defineProps({
   isAnchor: {
     type: Boolean,
     default: false
-  },
-  likeCount: {
-    type: Number,
-    default: 0
   }
 });
 
-const emit = defineEmits(['like', 'share', 'gift', 'end-live', 'leave-room']);
-
-const handleLike = () => {
-  emit('like');
-};
-
-const handleShare = () => {
-  emit('share');
-};
-
-const handleGift = () => {
-  emit('gift');
-};
+const emit = defineEmits(['end-live', 'leave-room']);
 
 const handleEndLive = () => {
   emit('end-live');
@@ -85,75 +47,10 @@ const handleLeaveRoom = () => {
   box-shadow: 8rpx 8rpx 16rpx #e9eef7, -8rpx -8rpx 16rpx #ffffff;
 }
 
-/* 操作按钮组 */
-.action-buttons {
-  flex-direction: row;
-  justify-content: space-around;
-  padding: 10rpx 0 30rpx 0;
-}
-
-/* 操作按钮项 */
-.action-button {
-  flex-direction: column;
-  align-items: center;
-}
-
-/* 操作图标包装器 */
-.action-icon-wrapper {
-  position: relative;
-  width: 60rpx;
-  height: 60rpx;
-  border-radius: 16rpx;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 10rpx;
-  background: #ffffff;
-  border: 1rpx solid #e9eef7;
-  box-shadow: 4rpx 4rpx 8rpx #e9eef7, -4rpx -4rpx 8rpx #ffffff;
-}
-
-/* 不同类型的图标背景 */
-.like {
-  background: #ffffff;
-}
-
-.share {
-  background: #ffffff;
-}
-
-.gift {
-  background: #ffffff;
-}
-
-/* 波纹效果 */
-.ripple-effect {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border-radius: 16rpx;
-  background: radial-gradient(circle, rgba(0, 122, 255, 0.08) 0%, transparent 70%);
-  opacity: 0;
-}
-
-/* 操作图标 */
-.action-icon {
-  font-size: 28rpx;
-  color: #4a5568;
-}
-
-/* 操作文本 */
-.action-text {
-  color: #6b7a90;
-  font-size: 20rpx;
-  font-weight: 500;
-  text-shadow: 0 1rpx 2rpx #f0f0f3;
-}
-
 /* 控制按钮组 */
 .control-buttons {
   flex-direction: row;
   justify-content: center;
-  margin-top: 20rpx;
 }
 
 /* 按钮内容 */
@@ -197,7 +94,7 @@ const handleLeaveRoom = () => {
 }
 
 /* #ifdef APP-NVUE */
-.action-container, .action-icon-wrapper, .leave-room {
+.action-container, .leave-room {
   background-color: #f6f8fb;
   border-color: #e9eef7;
 }
@@ -214,33 +111,12 @@ const handleLeaveRoom = () => {
   box-shadow: 0 -8rpx 32rpx rgba(0, 0, 0, 0.1);
 }
 
-.action-icon-wrapper {
-  backdrop-filter: blur(10rpx);
-  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
-}
-
 .end-live {
   box-shadow: 0 8rpx 24rpx rgba(255, 59, 48, 0.3);
 }
 
 .leave-room {
   box-shadow: 0 8rpx 24rpx rgba(0, 122, 255, 0.3);
-}
-
-.action-icon-wrapper:hover .ripple-effect {
-  opacity: 1;
-  animation: ripple 0.6s ease-out;
-}
-
-@keyframes ripple {
-  0% {
-    transform: scale(0);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0;
-  }
 }
 /* #endif */
 </style>

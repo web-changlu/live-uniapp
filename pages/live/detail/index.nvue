@@ -23,10 +23,14 @@
       <ControlPanel
         v-if="isAnchor"
         :localStream="trtcStore.localStream"
+        :likeCount="liveStore.stats.likeCount"
         @toggle-video="toggleVideo"
         @toggle-audio="toggleAudio"
         @switch-camera="switchCamera"
         @show-beauty="showBeautyPanel"
+        @like="handleLike"
+        @share="handleShare"
+        @gift="handleGift"
       />
     </view>
 
@@ -44,10 +48,6 @@
       <!-- 操作按钮 -->
       <InteractionBar
         :isAnchor="isAnchor"
-        :likeCount="liveStore.stats.likeCount"
-        @like="handleLike"
-        @share="handleShare"
-        @gift="handleGift"
         @end-live="endLive"
         @leave-room="leaveRoom"
       />
