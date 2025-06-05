@@ -1,34 +1,51 @@
 <template>
 	<view class="page-container">
-		<!-- 背景图片 -->
-		<image class="background-image" src="@/static/images/bg1.jpg" mode="aspectFill"></image>
-
 		<!-- 内容区域 -->
 		<view class="content">
-			<text class="page-title">开播设置</text>
+			<!-- 页面标题 -->
+			<view class="title-container">
+				<text class="page-title">开播设置</text>
+				<text class="page-subtitle">设置您的直播信息</text>
+			</view>
 
 			<!-- 表单区域 -->
-			<view class="form">
+			<view class="form-container">
 				<view class="form-item">
-					<text class="form-label">标题</text>
-					<input class="form-input" v-model="liveTitle" placeholder="请输入开播标题" />
+					<text class="form-label">直播标题</text>
+					<view class="input-wrapper">
+						<input class="form-input" v-model="liveTitle" placeholder="请输入开播标题" placeholder-style="color: #a0a0a0;" />
+					</view>
 				</view>
 
 				<view class="form-item">
-					<text class="form-label">描述</text>
-					<textarea class="form-textarea" v-model="liveDescription" placeholder="请输入开播描述"></textarea>
+					<text class="form-label">直播描述</text>
+					<view class="textarea-wrapper">
+						<textarea class="form-textarea" v-model="liveDescription" placeholder="请输入开播描述" placeholder-style="color: #a0a0a0;"></textarea>
+					</view>
 				</view>
 
 				<view class="form-item">
-					<text class="form-label">封面</text>
-					<button class="form-button" @click="selectCover">选择封面</button>
-					<image v-if="coverImage" :src="coverImage" class="cover-image" />
+					<text class="form-label">直播封面</text>
+					<view class="cover-section">
+						<view class="cover-button" @click="selectCover">
+							<text class="cover-button-icon">📷</text>
+							<text class="cover-button-text">选择封面</text>
+						</view>
+						<view v-if="coverImage" class="cover-preview">
+							<image :src="coverImage" class="cover-image" mode="aspectFill" />
+							<view class="cover-remove" @click="removeCover">
+								<text class="remove-icon">✕</text>
+							</view>
+						</view>
+					</view>
 				</view>
 			</view>
 
 			<!-- 开始直播按钮 -->
 			<view class="action-area">
-				<button class="start-button" @click="startLive">开始直播</button>
+				<view class="start-button" @click="startLive">
+					<text class="start-button-text">开始直播</text>
+				</view>
 			</view>
 		</view>
 	</view>
@@ -38,15 +55,15 @@
 import { ref, onMounted } from 'vue';
 import permision from "@/TrtcCloud/permission.js";
 import genTestUserSig from '@/debug/GenerateTestUserSig';
-import { useLiveStore, useUserStore } from '@/store'
+import { useLiveStore, useUserStore, useTrtcStore } from '@/store'
 
 // 使用store
 const liveStore = useLiveStore();
 const userStore = useUserStore();
 const trtcStore = useTrtcStore();
 
-const liveTitle = ref('直播标题');
-const liveDescription = ref('直播描述');
+const liveTitle = ref('我的精彩直播');
+const liveDescription = ref('欢迎来到我的直播间，一起互动吧！');
 const coverImage = ref('');
 const userId = ref('user_' + Math.floor(Math.random() * 100000).toString());
 
@@ -59,6 +76,10 @@ const selectCover = () => {
 			coverImage.value = res.tempFilePaths[0];
 		},
 	});
+};
+
+const removeCover = () => {
+	coverImage.value = '';
 };
 
 const startLive = async () => {
@@ -162,124 +183,212 @@ onMounted(() => {
 /* 页面容器 */
 .page-container {
 	flex: 1;
-	position: relative;
 	width: 750rpx;
-	height: 100vh;
-	overflow: hidden; /* 防止内容溢出 */
+	min-height: 100vh;
+	background-color: #f6f8fb;
 }
-
-/* 背景图片 - 确保完全覆盖全屏 */
-.background-image {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	z-index: -1;
-	opacity: 0.85; /* 调整不透明度 */
-}
-
 /* 内容区域 */
 .content {
 	flex: 1;
-	padding: 30rpx;
+	padding: 40rpx 30rpx;
 	flex-direction: column;
-	width: 750rpx;
-	height: 100vh;
-	position: relative; /* 确保内容在背景之上 */
-	z-index: 1;
+}
+
+/* 标题容器 */
+.title-container {
+	flex-direction: column;
+	align-items: center;
+	margin-bottom: 10rpx;
 }
 
 /* 页面标题 */
 .page-title {
-	font-size: 40rpx;
+	font-size: 24rpx;
 	font-weight: bold;
-	color: #FFFFFF;
+	color: #2d3748;
 	text-align: center;
-	margin-top: 60rpx;
-	margin-bottom: 40rpx;
+	margin-bottom: 16rpx;
 }
 
-/* 表单区域 - 更换配色 */
-.form {
-	background-color: rgba(222, 225, 240, 0.1); /* 深蓝色半透明背景 */
-	border-radius: 20rpx;
-	padding: 30rpx;
-	margin-bottom: 40rpx;
-	width: 690rpx; /* 考虑到父容器的padding */
+/* 页面副标题 */
+.page-subtitle {
+	font-size: 18rpx;
+	color: #718096;
+	text-align: center;
+}
+
+/* 表单容器 */
+.form-container {
+	flex-direction: column;
+	margin-bottom: 10rpx;
 }
 
 /* 表单项 */
 .form-item {
-	margin-bottom: 30rpx;
+	margin-bottom: 10rpx;
 }
 
 /* 表单标签 */
 .form-label {
-	font-size: 28rpx;
-	color: #E0E0FF; /* 浅蓝色文字 */
-	margin-bottom: 15rpx;
-	font-weight: 500;
+	font-size: 16rpx;
+	color: #2d3748;
+	margin-bottom: 20rpx;
+	font-weight: 600;
+}
+
+/* 输入框包装器 */
+.input-wrapper {
+	background: #ffffff;
+	border-radius: 16rpx;
+	border: 1rpx solid #e2e8f0;
+	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
 }
 
 /* 表单输入框 */
 .form-input {
-	background-color: rgba(255, 255, 255, 0.9);
-	border-radius: 10rpx;
-	padding: 20rpx;
-	font-size: 28rpx;
-	border: 1px solid;
-	border-color: rgba(255, 255, 255, 0.3);
-	width: 630rpx;
-	height: 90rpx;
+	padding: 32rpx 24rpx;
+	font-size: 12rpx;
+	color: #2d3748;
+	height: 100rpx;
+	line-height: 100rpx;
+}
+
+/* 文本域包装器 */
+.textarea-wrapper {
+	background: #ffffff;
+	border-radius: 16rpx;
+	border: 1rpx solid #e2e8f0;
+	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
 }
 
 /* 表单文本域 */
 .form-textarea {
-	background-color: rgba(255, 255, 255, 0.9);
-	border-radius: 10rpx;
-	padding: 20rpx;
-	font-size: 28rpx;
+	padding: 32rpx 24rpx;
+	font-size: 12rpx;
+	color: #2d3748;
 	height: 200rpx;
-	width: 630rpx;
-	border: 1px solid rgba(255, 255, 255, 0.3);
+	line-height: 40rpx;
 }
 
-/* 表单按钮 */
-.form-button {
-	background-color:rgb(215, 233, 242); /* 蓝紫色按钮 */
-	color: #FFFFFF;
-	border-radius: 10rpx;
-	font-size: 28rpx;
+/* 封面区域 */
+.cover-section {
+	flex-direction: column;
+}
+
+/* 封面按钮 */
+.cover-button {
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	background: #ffffff;
+	border-radius: 16rpx;
+	padding: 32rpx;
+	border: 1rpx solid #e2e8f0;
+	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.05);
 	margin-bottom: 20rpx;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-	width: 150rpx;
-	height: 100px;
 }
 
-/* 封面图片 - 改为正方形 */
+.cover-button-icon {
+	font-size: 32rpx;
+	margin-right: 12rpx;
+	color: #718096;
+}
+
+.cover-button-text {
+	font-size: 18rpx;
+	color: #2d3748;
+	font-weight: 500;
+}
+
+/* 封面预览 */
+.cover-preview {
+	position: relative;
+	align-self: center;
+}
+
+/* 封面图片 */
 .cover-image {
 	width: 300rpx;
 	height: 300rpx;
-	border-radius: 10rpx;
-	border: 2px solid rgba(255, 255, 255, 0.5);
+	border-radius: 16rpx;
+	border: 2rpx solid #e2e8f0;
+}
+
+/* 移除封面按钮 */
+.cover-remove {
+	position: absolute;
+	top: -10rpx;
+	right: -10rpx;
+	width: 40rpx;
+	height: 40rpx;
+	background: #e53e3e;
+	border-radius: 20rpx;
+	justify-content: center;
+	align-items: center;
+	border: 2rpx solid #ffffff;
+}
+
+.remove-icon {
+	font-size: 20rpx;
+	color: #ffffff;
+	font-weight: bold;
 }
 
 /* 操作区域 */
 .action-area {
 	align-items: center;
-	margin-top: 40rpx;
-	width: 750rpx;
-	display: flex;
 	justify-content: center;
 }
 
-/* 开始按钮 */
+/* 开始直播按钮 */
 .start-button {
-	background-color: #FF5722;
-	color: #FFFFFF;
-	border-radius: 999rem;
-	width: 300rpx;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	background: #3182ce;
+	border-radius: 50rpx;
+	padding: 32rpx 80rpx;
+	min-width: 400rpx;
+	box-shadow: 0 8rpx 20rpx rgba(49, 130, 206, 0.3);
+}
+
+.start-button-text {
+	font-size: 36rpx;
+	color: #ffffff;
 	font-weight: bold;
 }
+
+/* #ifdef APP-NVUE */
+/* NVUE特定样式 */
+.page-container {
+	background-color: #f6f8fb;
+}
+
+.input-wrapper, .textarea-wrapper, .cover-button {
+	background-color: #ffffff;
+	border-color: #e2e8f0;
+}
+
+.start-button:active {
+	opacity: 0.9;
+	transform: scale(0.98);
+}
+
+.input-wrapper:focus-within, .textarea-wrapper:focus-within {
+	border-color: #3182ce;
+}
+/* #endif */
+
+/* #ifdef APP-PLUS */
+/* APP-PLUS平台特定样式 */
+.start-button:hover {
+	transform: translateY(-2rpx);
+	box-shadow: 0 12rpx 24rpx rgba(49, 130, 206, 0.4);
+}
+
+.start-button:active {
+	transform: translateY(1rpx);
+	box-shadow: 0 4rpx 12rpx rgba(49, 130, 206, 0.2);
+}
+/* #endif */
 </style>
