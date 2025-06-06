@@ -89,16 +89,17 @@ const handleGift = () => {
 <style>
 /* 视频控制按钮容器 */
 .video-controls {
+  padding: 20rpx;
   flex-direction: column;
-  border-bottom-width: 1rpx;
-  border-bottom-color: #e9eef7;
 }
 
 /* 控制按钮行 */
 .control-row {
   flex-direction: row;
   justify-content: space-around;
-  margin-bottom: 30rpx;
+  padding-bottom: 16rpx;
+  border-bottom-width: 1rpx;
+  border-bottom-color: #e9eef7;
 }
 
 /* 控制按钮 - 新拟态风格 */
