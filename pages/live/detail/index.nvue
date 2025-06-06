@@ -1,5 +1,5 @@
 <template>
-  <view class="page-container">
+  <view class="page-container" :style="{ paddingTop: statusBarHeight + 'px' }"></view>>
     <!-- 视频区域 -->
     <view class="video-section">
       <!-- 视频播放区域 -->
@@ -105,6 +105,8 @@ const isAnchor = computed(() => {
 const hasRemoteStream = computed(() => {
   return trtcStore.remoteStreams.length > 0;
 });
+
+const statusBarHeight = ref(0)
 
 // 视频控制方法
 const toggleVideo = () => {
@@ -346,6 +348,11 @@ const checkPermission = () => {
 };
 
 onLoad((option) => {
+
+  /* #ifdef APP-PLUS */
+  statusBarHeight.value = uni.getSystemInfoSync().statusBarHeight;
+  /* #endif */
+
   console.log('onLoad触发----->', JSON.stringify(option), 'isAnchor', isAnchor.value);
   checkPermission();
   console.log('option', JSON.stringify(option));
@@ -487,24 +494,6 @@ const applyBeauty = () => {
 }
 
 /* #ifdef APP-PLUS */
-/* 状态栏适配 */
-.page-container {
-  padding-top: var(--status-bar-height);
-}
-
-/* APP-PLUS平台支持更多特性 */
-.interaction-section {
-  backdrop-filter: blur(20rpx);
-  box-shadow: 0 -8rpx 32rpx rgba(0, 0, 0, 0.08);
-}
-/* #endif */
-
-/* #ifdef APP-NVUE */
-/* NVUE特定样式 */
-.page-container {
-  background-color: #f6f8fb;
-}
-
 .interaction-section {
   background-color: #ffffff;
   border-top-width: 1rpx;

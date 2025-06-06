@@ -91,7 +91,7 @@ const handleLeaveRoom = () => {
   text-shadow: 0 1rpx 2rpx #f0f0f3;
 }
 
-/* #ifdef APP-NVUE */
+/* #ifdef APP-PLUS */
 .action-container, .leave-room {
   background-color: #f6f8fb;
   border-color: #e9eef7;
@@ -102,19 +102,4 @@ const handleLeaveRoom = () => {
 }
 /* #endif */
 
-/* #ifdef APP-PLUS */
-/* APP-PLUS平台支持更多特性 */
-.action-container {
-  backdrop-filter: blur(20rpx);
-  box-shadow: 0 -8rpx 32rpx rgba(0, 0, 0, 0.1);
-}
-
-.end-live {
-  box-shadow: 0 8rpx 24rpx rgba(255, 59, 48, 0.3);
-}
-
-.leave-room {
-  box-shadow: 0 8rpx 24rpx rgba(0, 122, 255, 0.3);
-}
-/* #endif */
 </style>

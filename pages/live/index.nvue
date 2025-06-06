@@ -184,7 +184,6 @@ onMounted(() => {
 .page-container {
 	flex: 1;
 	width: 750rpx;
-	min-height: 100vh;
 	background-color: #f6f8fb;
 }
 /* 内容区域 */

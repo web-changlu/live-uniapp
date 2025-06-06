@@ -101,7 +101,7 @@ defineProps({
   text-align: center;
 }
 
-/* #ifdef APP-NVUE */
+/* #ifdef APP-PLUS */
 /* NVUE特定样式 */
 .video-container {
   background-color: #f6f8fb;
@@ -113,10 +113,4 @@ defineProps({
 }
 /* #endif */
 
-/* #ifdef APP-PLUS */
-/* APP-PLUS平台支持更多特性 */
-.placeholder-video {
-  backdrop-filter: blur(15rpx);
-}
-/* #endif */
 </style>

@@ -187,7 +187,7 @@ defineProps({
   text-align: center;
 }
 
-/* #ifdef APP-NVUE */
+/* #ifdef APP-PLUS */
 /* NVUE特定样式 */
 .chat-container {
   background-color: #f6f8fb;
@@ -201,21 +201,6 @@ defineProps({
 
 .message-item:active {
   background-color: #f0f0f3;
-}
-/* #endif */
-
-/* #ifdef APP-PLUS */
-/* APP-PLUS平台支持更多特性 */
-.chat-container {
-  backdrop-filter: blur(20rpx);
-}
-
-.message-bubble {
-  backdrop-filter: blur(10rpx);
-}
-
-.chat-count-badge {
-  box-shadow: 0 4rpx 12rpx rgba(0, 122, 255, 0.3);
 }
 /* #endif */
 </style>

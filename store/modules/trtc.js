@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 
 // #ifdef APP-PLUS
 
-import TrtcCloud as TRTC_SDK from '@/TrtcCloud/lib/index';
+import TRTC_SDK from '@/TrtcCloud/lib/index';
 
 // #endif
 
