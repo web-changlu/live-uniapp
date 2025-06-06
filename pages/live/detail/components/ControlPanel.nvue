@@ -2,16 +2,16 @@
   <view class="video-controls">
     <!-- 视频控制按钮 -->
     <view class="control-row">
-      <view class="control-button" :class="{ 'active': !localStream.videoEnabled }" @click="toggleVideo">
+      <view v-if="isAnchor" class="control-button" :class="{ 'active': !localStream.videoEnabled }" @click="toggleVideo">
         <text class="control-icon">{{ localStream.videoEnabled ? '📹' : '🚫' }}</text>
       </view>
-      <view class="control-button" :class="{ 'active': !localStream.audioEnabled }" @click="toggleAudio">
+      <view v-if="isAnchor" class="control-button" :class="{ 'active': !localStream.audioEnabled }" @click="toggleAudio">
         <text class="control-icon">{{ localStream.audioEnabled ? '🎤' : '🔇' }}</text>
       </view>
-      <view class="control-button" @click="switchCamera">
+      <view v-if="isAnchor" class="control-button" @click="switchCamera">
         <text class="control-icon">🔄</text>
       </view>
-      <view class="control-button" @click="showBeauty">
+      <view v-if="isAnchor" class="control-button" @click="showBeauty">
         <text class="control-icon">✨</text>
       </view>
       <view class="interaction-button" @click="handleLike">
@@ -30,6 +30,10 @@
 
 <script setup>
 defineProps({
+  isAnchor: {
+    type: Boolean,
+    default: false
+  },
   localStream: {
     type: Object,
     default: () => ({
@@ -85,12 +89,9 @@ const handleGift = () => {
 <style>
 /* 视频控制按钮容器 */
 .video-controls {
-  position: absolute;
-  top: 260rpx;
-  left: 30rpx;
-  right: 30rpx;
   flex-direction: column;
-  z-index: 10;
+  border-bottom-width: 1rpx;
+  border-bottom-color: #e9eef7;
 }
 
 /* 控制按钮行 */

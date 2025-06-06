@@ -18,10 +18,13 @@
         :stats="liveStore.stats"
         :liveInfo="liveStore.liveInfo"
       />
+    </view>
 
+    <!-- 互动区域 -->
+    <view class="interaction-section">
       <!-- 视频控制按钮 -->
       <ControlPanel
-        v-if="isAnchor"
+        :isAnchor="isAnchor"
         :localStream="trtcStore.localStream"
         :likeCount="liveStore.stats.likeCount"
         @toggle-video="toggleVideo"
@@ -32,10 +35,6 @@
         @share="handleShare"
         @gift="handleGift"
       />
-    </view>
-
-    <!-- 互动区域 -->
-    <view class="interaction-section">
       <!-- 消息列表 -->
       <ChatList
         :messages="liveStore.messages"

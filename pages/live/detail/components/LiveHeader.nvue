@@ -8,15 +8,13 @@
         </view>
       </view>
       <view class="info-content">
-        <text class="anchor-name">{{ anchor.name }}</text>
-        <view class="viewer-count">
-          <text class="viewer-icon">👥</text>
-          <text class="viewer-count-text">{{ stats.viewerCount }}</text>
-        </view>
+        <text class="anchor-name">{{ anchor.name || '主播' }}</text>
+        <text class="live-title">{{ liveInfo.title || '暂无标题...' }}</text>
       </view>
-    </view>
-    <view class="live-title-container">
-      <text class="live-title">{{ liveInfo.title || '暂无标题...' }}</text>
+      <view class="viewer-count">
+        <text class="viewer-icon">👥</text>
+        <text class="viewer-count-text">{{ stats.viewerCount }}</text>
+      </view>
     </view>
   </view>
 </template>
@@ -62,7 +60,6 @@ defineProps({
   background: rgba(255, 255, 255, 0.85);
   border-radius: 25rpx;
   padding: 20rpx;
-  margin-bottom: 20rpx;
   border: 1rpx solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
 }
@@ -102,14 +99,23 @@ defineProps({
 .info-content {
   flex: 1;
   flex-direction: column;
+  margin-right: 20rpx;
 }
 
 /* 主播名称 */
 .anchor-name {
   color: #4a5568;
-  font-size: 32rpx;
+  font-size: 24rpx;
   font-weight: bold;
   margin-bottom: 8rpx;
+  text-shadow: 0 1rpx 3rpx rgba(255, 255, 255, 0.8);
+}
+
+/* 直播标题 */
+.live-title {
+  color: #6b7a90;
+  font-size: 18rpx;
+  line-height: 32rpx;
   text-shadow: 0 1rpx 3rpx rgba(255, 255, 255, 0.8);
 }
 
@@ -120,7 +126,7 @@ defineProps({
   background: rgba(255, 255, 255, 0.6);
   border-radius: 20rpx;
   padding: 8rpx 16rpx;
-  align-self: flex-start;
+  align-self: center;
 }
 
 .viewer-icon {
@@ -136,31 +142,9 @@ defineProps({
   font-weight: 500;
 }
 
-/* 直播标题容器 */
-.live-title-container {
-  background: rgba(255, 255, 255, 0.85);
-  border-radius: 20rpx;
-  padding: 16rpx 20rpx;
-  border: 1rpx solid rgba(255, 255, 255, 0.3);
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
-}
-
-/* 直播标题 */
-.live-title {
-  color: #4a5568;
-  font-size: 18rpx;
-  line-height: 40rpx;
-  text-shadow: 0 1rpx 3rpx rgba(255, 255, 255, 0.8);
-}
-
 /* #ifdef APP-NVUE */
 /* NVUE特定样式 - 不支持backdrop-filter，使用替代方案 */
 .anchor-info {
-  background-color: rgba(255, 255, 255, 0.85);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-.live-title-container {
   background-color: rgba(255, 255, 255, 0.85);
   border-color: rgba(255, 255, 255, 0.3);
 }
@@ -174,17 +158,6 @@ defineProps({
 /* APP-PLUS平台支持更多CSS特性 */
 .anchor-info {
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
-}
-
-.live-title-container {
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
-}
-/* #endif */
-
-/* #ifdef APP-NVUE */
-.anchor-info, .live-title-container {
-  background-color: #f6f8fb;
-  border-color: #e9eef7;
 }
 /* #endif */
 </style>
