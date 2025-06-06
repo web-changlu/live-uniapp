@@ -1,5 +1,5 @@
 <template>
-  <view class="page-container" :style="{ paddingTop: statusBarHeight + 'px' }"></view>>
+  <view class="page-container" :style="{ paddingTop: statusBarHeight + 'px' }">
     <!-- 视频区域 -->
     <view class="video-section">
       <!-- 视频播放区域 -->
