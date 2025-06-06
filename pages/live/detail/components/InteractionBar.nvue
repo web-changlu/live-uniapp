@@ -1,5 +1,4 @@
 <template>
-  <view class="action-container">
     <view class="control-buttons">
       <view v-if="isAnchor" class="end-live" @click="handleEndLive">
         <view class="button-content">
@@ -14,7 +13,6 @@
         </view>
       </view>
     </view>
-  </view>
 </template>
 
 <script setup>

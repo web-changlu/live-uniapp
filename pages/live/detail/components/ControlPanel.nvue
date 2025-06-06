@@ -25,11 +25,6 @@
         <text class="interaction-icon">🎁</text>
       </view>
     </view>
-
-    <!-- 互动功能按钮 -->
-    <view class="interaction-row">
-      
-    </view>
   </view>
 </template>
 
@@ -107,19 +102,19 @@ const handleGift = () => {
 
 /* 控制按钮 - 新拟态风格 */
 .control-button {
-  width: 60rpx;
-  height: 60rpx;
-  background-color: #f6f8fb;
+  width: 50rpx;
+  height: 50rpx;
+  background-color: rgba(255, 255, 255, 0.9);
   border-radius: 12rpx;
   justify-content: center;
   align-items: center;
-  border: 1rpx solid #e9eef7;
-  box-shadow: 5rpx 5rpx 10rpx #e9eef7, -5rpx -5rpx 10rpx #ffffff;
+  border: 1rpx solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
 }
 
 .control-button.active {
-  background-color: #e9eef7;
-  box-shadow: inset 2rpx 2rpx 4rpx #d1d9e6, inset -2rpx -2rpx 4rpx #ffffff;
+  background-color: rgba(233, 238, 247, 0.9);
+  box-shadow: inset 2rpx 2rpx 4rpx rgba(209, 217, 230, 0.5), inset -2rpx -2rpx 4rpx rgba(255, 255, 255, 0.5);
 }
 
 /* 控制图标 */
@@ -130,14 +125,14 @@ const handleGift = () => {
 
 /* 互动按钮 */
 .interaction-button {
-  width: 60rpx;
-  height: 60rpx;
-  background-color: #ffffff;
+  width: 50rpx;
+  height: 50rpx;
+  background-color: rgba(255, 255, 255, 0.9);
   border-radius: 16rpx;
   justify-content: center;
   align-items: center;
-  border: 1rpx solid #e9eef7;
-  box-shadow: 4rpx 4rpx 8rpx #e9eef7, -4rpx -4rpx 8rpx #ffffff;
+  border: 1rpx solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
   flex-direction: column;
 }
 
@@ -164,21 +159,21 @@ const handleGift = () => {
 /* #ifdef APP-NVUE */
 /* 为NVUE平台添加特定样式 - 简化版新拟态 */
 .control-button {
-  background-color: #f6f8fb;
+  background-color: rgba(255, 255, 255, 0.9);
   border-width: 1rpx;
-  border-color: #e9eef7;
+  border-color: rgba(255, 255, 255, 0.3);
   border-style: solid;
 }
 
 .control-button.active {
-  background-color: #e9eef7;
-  border-color: #d1d9e6;
+  background-color: rgba(233, 238, 247, 0.9);
+  border-color: rgba(209, 217, 230, 0.5);
 }
 
 .interaction-button {
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.9);
   border-width: 1rpx;
-  border-color: #e9eef7;
+  border-color: rgba(255, 255, 255, 0.3);
   border-style: solid;
 }
 
@@ -191,49 +186,35 @@ const handleGift = () => {
 /* #ifdef APP-PLUS */
 /* 为APP-PLUS平台添加完整的新拟态效果 */
 .control-button {
-  box-shadow:
-    5rpx 5rpx 10rpx #e9eef7,
-    -5rpx -5rpx 10rpx #ffffff;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
 }
 
 .control-button.active {
-  box-shadow:
-    inset 2rpx 2rpx 4rpx #d1d9e6,
-    inset -2rpx -2rpx 4rpx #ffffff;
+  box-shadow: inset 2rpx 2rpx 4rpx rgba(209, 217, 230, 0.5), inset -2rpx -2rpx 4rpx rgba(255, 255, 255, 0.5);
 }
 
 .interaction-button {
-  box-shadow:
-    4rpx 4rpx 8rpx #e9eef7,
-    -4rpx -4rpx 8rpx #ffffff;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
 }
 
 .control-button:hover {
   transform: translateY(-1rpx);
-  box-shadow:
-    7rpx 7rpx 14rpx #e9eef7,
-    -7rpx -7rpx 14rpx #ffffff;
+  box-shadow: 0 6rpx 16rpx rgba(0, 0, 0, 0.15);
 }
 
 .control-button:active {
   transform: translateY(0.5rpx);
-  box-shadow:
-    3rpx 3rpx 6rpx #e9eef7,
-    -3rpx -3rpx 6rpx #ffffff;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
 }
 
 .interaction-button:hover {
   transform: translateY(-1rpx);
-  box-shadow:
-    6rpx 6rpx 12rpx #e9eef7,
-    -6rpx -6rpx 12rpx #ffffff;
+  box-shadow: 0 6rpx 16rpx rgba(0, 0, 0, 0.15);
 }
 
 .interaction-button:active {
   transform: translateY(0.5rpx);
-  box-shadow:
-    2rpx 2rpx 4rpx #e9eef7,
-    -2rpx -2rpx 4rpx #ffffff;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
 }
 /* #endif */
 </style>

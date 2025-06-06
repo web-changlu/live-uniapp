@@ -85,13 +85,13 @@ defineProps({
 
 .chat-title {
   color: #4a5568;
-  font-size: 28rpx;
+  font-size: 18rpx;
   font-weight: bold;
   text-shadow: 0 1rpx 2rpx #f0f0f3;
 }
 
 .chat-count-badge {
-  background: linear-gradient(45deg, #007aff, #5856d6);
+  background: linear-gradient(45deg, #e42020, #5856d6);
   border-radius: 20rpx;
   padding: 6rpx 12rpx;
   border: 1rpx solid #e9eef7;
@@ -163,8 +163,8 @@ defineProps({
 /* 消息内容 */
 .message-content {
   color: #4a5568;
-  font-size: 26rpx;
-  line-height: 36rpx;
+  font-size: 18rpx;
+  line-height: 18rpx;
 }
 
 /* 空消息状态 */

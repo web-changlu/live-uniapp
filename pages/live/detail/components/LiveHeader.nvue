@@ -59,12 +59,12 @@ defineProps({
 .anchor-info {
   flex-direction: row;
   align-items: center;
-  background: #f6f8fb;
+  background: rgba(255, 255, 255, 0.85);
   border-radius: 25rpx;
   padding: 20rpx;
   margin-bottom: 20rpx;
-  border: 1rpx solid #e9eef7;
-  box-shadow: 8rpx 8rpx 16rpx #e9eef7, -8rpx -8rpx 16rpx #ffffff;
+  border: 1rpx solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
 }
 
 /* 头像容器 */
@@ -78,7 +78,7 @@ defineProps({
   width: 80rpx;
   height: 80rpx;
   border-radius: 40rpx;
-  border: 3rpx solid #e9eef7;
+  border: 3rpx solid rgba(255, 255, 255, 0.8);
 }
 
 /* 直播指示器 */
@@ -110,14 +110,14 @@ defineProps({
   font-size: 32rpx;
   font-weight: bold;
   margin-bottom: 8rpx;
-  text-shadow: 0 2rpx 4rpx #f0f0f3;
+  text-shadow: 0 1rpx 3rpx rgba(255, 255, 255, 0.8);
 }
 
 /* 观众数量 */
 .viewer-count {
   flex-direction: row;
   align-items: center;
-  background: #f0f0f3;
+  background: rgba(255, 255, 255, 0.6);
   border-radius: 20rpx;
   padding: 8rpx 16rpx;
   align-self: flex-start;
@@ -138,42 +138,46 @@ defineProps({
 
 /* 直播标题容器 */
 .live-title-container {
-  background: #f6f8fb;
+  background: rgba(255, 255, 255, 0.85);
   border-radius: 20rpx;
   padding: 16rpx 20rpx;
-  border: 1rpx solid #e9eef7;
-  box-shadow: 8rpx 8rpx 16rpx #e9eef7, -8rpx -8rpx 16rpx #ffffff;
+  border: 1rpx solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
 }
 
 /* 直播标题 */
 .live-title {
   color: #4a5568;
-  font-size: 16rpx;
+  font-size: 18rpx;
   line-height: 40rpx;
-  text-shadow: 0 1rpx 2rpx #f0f0f3;
+  text-shadow: 0 1rpx 3rpx rgba(255, 255, 255, 0.8);
 }
 
 /* #ifdef APP-NVUE */
 /* NVUE特定样式 - 不支持backdrop-filter，使用替代方案 */
 .anchor-info {
-  background-color: rgba(255, 255, 255, 0.15);
+  background-color: rgba(255, 255, 255, 0.85);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .live-title-container {
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(255, 255, 255, 0.85);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.viewer-count {
+  background-color: rgba(255, 255, 255, 0.6);
 }
 /* #endif */
 
 /* #ifdef APP-PLUS */
 /* APP-PLUS平台支持更多CSS特性 */
 .anchor-info {
-  backdrop-filter: blur(20rpx);
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
 }
 
 .live-title-container {
-  backdrop-filter: blur(15rpx);
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
 }
 /* #endif */
 
