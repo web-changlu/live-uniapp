@@ -59,7 +59,7 @@ defineProps({
   align-items: center;
   background: rgba(255, 255, 255, 0.85);
   border-radius: 25rpx;
-  padding: 20rpx;
+  padding: 10rpx;
   border: 1rpx solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
 }
@@ -72,8 +72,8 @@ defineProps({
 
 /* 主播头像 */
 .anchor-avatar {
-  width: 80rpx;
-  height: 80rpx;
+  width: 60rpx;
+  height: 60rpx;
   border-radius: 40rpx;
   border: 3rpx solid rgba(255, 255, 255, 0.8);
 }
@@ -91,7 +91,7 @@ defineProps({
 
 .live-text {
   color: #ffffff;
-  font-size: 20rpx;
+  font-size: 12rpx;
   font-weight: bold;
 }
 
@@ -105,17 +105,17 @@ defineProps({
 /* 主播名称 */
 .anchor-name {
   color: #4a5568;
-  font-size: 24rpx;
+  font-size: 18rpx;
   font-weight: bold;
-  margin-bottom: 8rpx;
+  margin-bottom: 5rpx;
   text-shadow: 0 1rpx 3rpx rgba(255, 255, 255, 0.8);
 }
 
 /* 直播标题 */
 .live-title {
   color: #6b7a90;
-  font-size: 18rpx;
-  line-height: 32rpx;
+  font-size: 14rpx;
+  line-height: 14rpx;
   text-shadow: 0 1rpx 3rpx rgba(255, 255, 255, 0.8);
 }
 
@@ -130,7 +130,7 @@ defineProps({
 }
 
 .viewer-icon {
-  font-size: 24rpx;
+  font-size: 18rpx;
   margin-right: 8rpx;
   color: #6b7a90;
 }
@@ -138,7 +138,7 @@ defineProps({
 /* 观众数量文本 */
 .viewer-count-text {
   color: #6b7a90;
-  font-size: 24rpx;
+  font-size: 18rpx;
   font-weight: 500;
 }
 
