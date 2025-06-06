@@ -2,7 +2,7 @@
   <view class="video-container">
     <!-- 本地视频预览 -->
     <view v-if="isAnchor" class="local-video">
-      <trtc-local-view v-if="localStream.videoEnabled" :viewId="localViewId" class="video-view"></trtc-local-view>
+      <trtc-local-view v-if="localStream.videoEnabled" :viewId="localViewId" class="video-view" style="height: 800rpx;flex: 1"></trtc-local-view>
       <view v-else class="placeholder-video">
         <text class="placeholder-text">摄像头已关闭</text>
       </view>
@@ -14,7 +14,7 @@
         v-if="hasRemoteStream" 
         class="video-view" 
         :viewId="remoteViewId" 
-        :userId="remoteUserId">
+        :userId="remoteUserId" style="height: 800rpx;flex: 1">
       </trtc-remote-view>
       <view v-else class="placeholder-video">
         <text class="placeholder-text">等待主播开播...</text>
@@ -64,7 +64,7 @@ defineProps({
 .video-container {
   position: relative;
   width: 750rpx;
-  height: 600rpx;
+  height: 800rpx;
   background: #f6f8fb;
   overflow: hidden;
 }
@@ -72,20 +72,20 @@ defineProps({
 /* 本地视频和远程视频 */
 .local-video, .remote-video {
   width: 750rpx;
-  height: 600rpx;
+  height: 800rpx;
 }
 
 /* 视频视图 */
 .video-view {
   width: 750rpx;
-  height: 600rpx;
+  height: 800rpx;
   flex: 1;
 }
 
 /* 占位视频 */
 .placeholder-video {
   width: 750rpx;
-  height: 600rpx;
+  height: 800rpx;
   justify-content: center;
   align-items: center;
   background: #ffffff;

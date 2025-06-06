@@ -130,7 +130,7 @@ const startLive = async () => {
 	} catch (error) {
 		// 隐藏加载中
 		uni.hideLoading();
-
+		console.error('开始直播失败:', error);
 		// 显示错误提示
 		uni.showToast({
 			title: error.message || '开始直播失败',

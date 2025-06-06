@@ -195,7 +195,7 @@ export const useTrtcStore = defineStore('trtc', {
     },
     
     stopLocalAudio() {
-      this.trtcCloud.stopLocalAudio();
+      this.trtcCloud?.stopLocalAudio();
     },
 
     // 停止本地预览
@@ -206,6 +206,7 @@ export const useTrtcStore = defineStore('trtc', {
 
         if (this.trtcCloud) {
           // 停止本地预览
+          console.log('停止本地预览', this.trtcCloud.stopLocalPreview)
           this.trtcCloud.stopLocalPreview()
 
           // 清除视图ID
@@ -287,7 +288,7 @@ export const useTrtcStore = defineStore('trtc', {
 
         if (this.trtcCloud && this.connectionState === 'connected') {
           // 使用TRTC API离开房间
-          this.trtcCloud.exitRoom()
+          this.trtcCloud.exitRoom?.()
           // TODO onExitRoom回调内再开启直播权限
         }
 
@@ -329,8 +330,12 @@ export const useTrtcStore = defineStore('trtc', {
         if (!this.trtcCloud) {
           this.initTrtc()
         }
-        const enabled = !trtcStore.localStream.videoEnabled;
+        const enabled = !this.localStream.videoEnabled;
         // 使用TRTC API开启/关闭本地视频
+        if(this.trtcCloud.muteLocalVideo){
+          console.warn('muteLocalVideo is not supported in this version',this.trtcCloud);
+          throw new Error('muteLocalVideo is not supported in this version')
+        }
         this.trtcCloud.muteLocalVideo(TRTCVideoStreamType.TRTCVideoStreamTypeBig, enabled)
 
         // 更新本地流状态
@@ -570,7 +575,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
 
         // 这里可以添加实际的销毁TRTC逻辑
-        TrtcCloud.destroyInstance()
+        // TrtcCloud.destroyInstance()
         // 重置状态
         this.trtcCloud = null
         this.roomId = ''
@@ -621,11 +626,10 @@ export const useTrtcStore = defineStore('trtc', {
         });
 
         if (!joinResult.success) {
+          console.log('joinRoom error:', joinResult.error);
           return joinResult;
         }
-
         // 开启本地预览和音频
-        if (options.viewId) {
           const localViewRes = this.startLocalPreview();
           if(localViewRes.success) {
             uni.showToast({
@@ -638,8 +642,6 @@ export const useTrtcStore = defineStore('trtc', {
               icon: 'none'
             });
           }
-        }
-
         return {
           success: true
         }

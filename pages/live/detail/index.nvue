@@ -53,7 +53,7 @@
     </view>
 
     <!-- 美颜面板 -->
-    <uni-popup ref="beautyPopup" type="bottom">
+    <uni-popup ref="beautyPopupRef" type="bottom">
       <BeautyPanel
         :beautyStyleOptions="liveStore.beautyStyleOptions"
         :currentBeautyStyle="liveStore.currentBeautyStyle"
@@ -111,14 +111,6 @@ const statusBarHeight = ref(0)
 // 视频控制方法
 const toggleVideo = () => {
   trtcStore.toggleLocalVideo();
-
-  if (enabled && !trtcStore.localStream.videoView) {
-    // 如果开启视频且没有视图，则启动本地预览
-    trtcStore.startLocalPreview();
-  } else if (!enabled) {
-    // 如果关闭视频，则停止本地预览
-    trtcStore.stopLocalPreview();
-  }
 };
 
 const toggleAudio = () => {
@@ -227,12 +219,12 @@ const endLive = () => {
         try {
           // 结束直播
           const endRes = liveStore.endLive();
+          console.log('endRes', endRes);
           if (!endRes.success) {
             uni.showToast({
               title: endRes.error || '直播结束直播失败',
               icon: 'none'
             });
-            return;
           }
           // 销毁TRTC
           trtcStore.destroyTrtc();
@@ -397,7 +389,7 @@ const destoryHandle = () => {
   // #ifdef APP-PLUS
   // 如果是主播，结束直播
   if (isAnchor.value && liveStore.liveStatus === 'live') {
-    endLive();
+    liveStore.endLive();
   }
 
   // 如果是观众，离开直播间
@@ -418,16 +410,16 @@ onBackPress(() => {
 });
 
 // 美颜面板引用
-const beautyPopup = ref(null);
+const beautyPopupRef = ref(null);
 
 // 显示美颜面板
 const showBeautyPanel = () => {
-  beautyPopup.value.open();
+  beautyPopupRef.value.open();
 };
 
 // 隐藏美颜面板
 const hideBeautyPanel = () => {
-  beautyPopup.value.close();
+  beautyPopupRef.value.close();
 };
 
 // 设置美颜风格
@@ -475,14 +467,13 @@ const applyBeauty = () => {
 .video-section {
   position: relative;
   width: 750rpx;
-  height: 60vh; /* 视频区域占60%的视口高度 */
+  height: 800rpx; /* 视频区域占60%的视口高度 */
   overflow: hidden;
   background-color: #f6f8fb;
 }
 
 /* 互动区域 */
 .interaction-section {
-  flex: 1;
   flex-direction: column;
   padding: 20rpx;
   background-color: #ffffff;
