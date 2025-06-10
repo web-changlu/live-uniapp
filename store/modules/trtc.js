@@ -574,8 +574,7 @@ export const useTrtcStore = defineStore('trtc', {
           this.leaveRoom()
         }
 
-        // 这里可以添加实际的销毁TRTC逻辑
-        // TrtcCloud.destroyInstance()
+        TrtcCloud.destroyInstance()
         // 重置状态
         this.trtcCloud = null
         this.roomId = ''
@@ -755,6 +754,6 @@ export const useTrtcStore = defineStore('trtc', {
       } finally {
         this.loading = false
       }
-    }
+    },
   }
 })

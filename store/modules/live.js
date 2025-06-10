@@ -190,6 +190,8 @@ export const useLiveStore = defineStore('live', {
           throw new Error(result.error || '结束直播失败');
         }
 
+        trtcStore.destroyTrtc()
+
         // 更新直播状态为已结束
         this.updateLiveStatus('ended')
         
@@ -271,6 +273,7 @@ export const useLiveStore = defineStore('live', {
           throw new Error(result.error || '离开直播间失败');
         }
 
+        trtcStore.destroyTrtc()
         // 从观众列表中移除
         const index = this.viewers.findIndex(viewer => viewer.id === userId)
         if (index !== -1) {

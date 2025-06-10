@@ -226,8 +226,6 @@ const endLive = () => {
               icon: 'none'
             });
           }
-          // 销毁TRTC
-          trtcStore.destroyTrtc();
 
           // 隐藏加载中
           uni.hideLoading();
@@ -266,9 +264,6 @@ const leaveRoom = () => {
       });
       return;
     }
-    // 销毁TRTC
-    trtcStore.destroyTrtc();
-
     // 隐藏加载中
     uni.hideLoading();
 
