@@ -156,7 +156,7 @@ export const useLiveStore = defineStore('live', {
         }
       } catch (error) {
         this.error = error.message || 'LIVE开始直播失败'
-        console.error('error:', this.error);
+        console.error('[startLive] error:', error);
         // 重置直播状态
         this.resetLiveState();
         // 返回上一页
@@ -200,7 +200,7 @@ export const useLiveStore = defineStore('live', {
         }
       } catch (error) {
         this.error = error.message || '结束直播失败'
-        console.error('error:', this.error);
+        console.error('[endLive] error:', error);
         return {
           success: false,
           error: this.error
@@ -249,7 +249,7 @@ export const useLiveStore = defineStore('live', {
         }
       } catch (error) {
         this.error = error.message || '加入直播间失败'
-        console.error('error:', this.error);
+        console.error('[joinLiveRoom] error:', error);
         return {
           success: false,
           error: this.error
@@ -288,7 +288,7 @@ export const useLiveStore = defineStore('live', {
         }
       } catch (error) {
         this.error = error.message || '离开直播间失败'
-        console.error('error:', this.error);
+        console.error('[leaveLiveRoom] error:', error);
         return {
           success: false,
           error: this.error

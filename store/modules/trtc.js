@@ -88,7 +88,7 @@ export const useTrtcStore = defineStore('trtc', {
           }
         } catch (error) {
           this.error = error.message || 'TRTC初始化失败'
-          console.error('error:',this.error);
+          console.error('[initTrtc] error:', error);
           return {
             success: false,
             error: this.error
@@ -184,7 +184,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '开启本地预览失败'
-        console.error('error:',this.error);
+        console.error('[startLocalPreview] error:', error);
         return {
           success: false,
           error: this.error
@@ -219,7 +219,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '停止本地预览失败'
-        console.error('error:',this.error);
+        console.error('[stopLocalPreview] error:', error);
         return {
           success: false,
           error: this.error
@@ -269,7 +269,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '加入房间失败'
-        console.error('error:',this.error);
+        console.error('[joinRoom] error:', error);
         this.connectionState = 'disconnected'
         return {
           success: false,
@@ -306,7 +306,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '离开房间失败'
-        console.error('error:',this.error);
+        console.error('[leaveRoom] error:', error);
         return {
           success: false,
           error: this.error
@@ -348,7 +348,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '操作本地视频失败'
-        console.error('error:',this.error);
+        console.error('[toggleLocalVideo] error:', error);
         return {
           success: false,
           error: this.error
@@ -377,7 +377,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '操作本地音频失败'
-        console.error('error:',this.error);
+        console.error('[toggleLocalAudio] error:', error);
         return {
           success: false,
           error: this.error
@@ -402,7 +402,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '操作屏幕共享失败'
-        console.error('error:',this.error);
+        console.error('[toggleScreenShare] error:', error);
         return {
           success: false,
           error: this.error
@@ -440,7 +440,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '切换摄像头失败'
-        console.error('error:',this.error);
+        console.error('[switchCamera] error:', error);
         return {
           success: false,
           error: this.error
@@ -467,7 +467,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '切换麦克风失败'
-        console.error('error:',this.error);
+        console.error('[switchMicrophone] error:', error);
         return {
           success: false,
           error: this.error
@@ -494,7 +494,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '切换扬声器失败'
-        console.error('error:',this.error);
+        console.error('[switchSpeaker] error:', error);
         return {
           success: false,
           error: this.error
@@ -519,7 +519,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '开启远程预览失败'
-        console.error('error:',this.error);
+        console.error('[startRemoteStreamPreview] error:', error);
         return {
           success: false,
           error: this.error
@@ -538,7 +538,7 @@ export const useTrtcStore = defineStore('trtc', {
         this.removeRemoteStream(userId)
       } catch (error) {
         this.error = error.message || '停止远程预览失败'
-        console.error('error:',this.error);
+        console.error('[stopRemoteStreamPreview] error:', error);
         return {
           success: false,
           error: this.error
@@ -599,7 +599,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '销毁TRTC失败'
-        console.error('error:',this.error);
+        console.error('[destroyTrtc] error:', error);
         return {
           success: false,
           error: this.error
@@ -646,7 +646,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || 'TRTC开始直播流失败'
-        console.error('error:', this.error);
+        console.error('[startLiveStream] error:', error);
         return {
           success: false,
           error: this.error
@@ -685,7 +685,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '加入直播流失败'
-        console.error('error:', this.error);
+        console.error('[joinLiveStream] error:', error);
         return {
           success: false,
           error: this.error
@@ -713,7 +713,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '结束直播流失败'
-        console.error('error:', this.error);
+        console.error('[endLiveStream] error:', error);
         return {
           success: false,
           error: this.error
@@ -746,7 +746,7 @@ export const useTrtcStore = defineStore('trtc', {
         }
       } catch (error) {
         this.error = error.message || '离开直播流失败'
-        console.error('error:', this.error);
+        console.error('[leaveLiveStream] error:', error);
         return {
           success: false,
           error: this.error
